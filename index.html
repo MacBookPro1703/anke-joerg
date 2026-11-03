@@ -1276,7 +1276,7 @@ async function openSettings(){
     <p class="fine" style="text-align:center;margin-top:12px">${esc(syncLine())}${pend ? ` · ${pend} Änderung(en) warten` : ''}</p>`, 'tall');
 }
 function openInvite(){
-  const u = inviteURL(), txt = `Hier ist unsere App 💛 Einfach öffnen – der Link ist dein Schlüssel: ${u}`;
+  const u = inviteURL(), txt = `Hier ist unsere App 💛 Öffne den Link in Safari, dort steht, wie es weitergeht: ${u}`;
   openSheet(`<h3 class="sh-title">Einladung für ${esc(nick(other()))}</h3>
     <p class="muted" style="margin:0 0 6px">Dieser Link ist der Schlüssel. Kein Passwort, kein Konto. Nur an ${esc(nick(other()))} schicken.</p>
     <div class="linkbox">${esc(u)}</div>
@@ -1318,11 +1318,22 @@ function onbHTML(){
   const next = (label='Weiter', act='onb-next') => `<button class="btn primary" data-act="${act}">${label}</button>`;
   const skip = `<button class="btn" data-act="onb-next" style="background:none;color:var(--muted)">Später</button>`;
   switch (o.step) {
-    case 'welcome': return `<div class="step"><div class="grow" style="display:flex;flex-direction:column;justify-content:center;text-align:center">
+    case 'welcome': {
+      if (o.mode === 'join' && isIOS() && !standalone()) return `<div class="step"><div class="ico">💌</div><h2>Du wurdest eingeladen</h2>
+        <p>Auf dem iPhone in dieser Reihenfolge:</p>
+        <ol><li>Unten auf <b>„Einladung kopieren“</b> tippen</li><li>In Safari auf <b>Teilen</b> (Quadrat mit Pfeil) → <b>„Zum Home-Bildschirm“</b></li>
+        <li>Die App über das neue Symbol öffnen</li><li>Dort <b>„Ich habe eine Einladung“</b> → <b>„Einfügen“</b></li></ol>
+        <div class="grow"></div><button class="btn primary" data-act="copy-join">Einladung kopieren</button>
+        <button class="btn" data-act="onb-next" style="background:none;color:var(--muted)">Lieber hier im Browser weiter</button></div>`;
+      return `<div class="step"><div class="grow" style="display:flex;flex-direction:column;justify-content:center;text-align:center">
         <div class="wordmark" style="font-size:58px">${esc(APP_NAME)}</div>
         <p style="margin-top:12px">${o.mode === 'join' ? 'Du wurdest eingeladen 💛 Ein paar Schritte, dann seid ihr verbunden.' : 'Nur für euch zwei. Momente, Stories, Challenges, Chat – und ein Knopf, wenn man den anderen braucht.'}</p></div>
-        ${dots}${next(o.mode === 'join' ? 'Los geht’s' : 'Einrichten')}
-        ${o.mode !== 'join' && Sync.configured ? '<p class="fine" style="text-align:center;margin-top:12px">Du hast einen Einladungslink bekommen? Dann öffne einfach den Link.</p>' : ''}</div>`;
+        ${dots}${o.mode === 'join' ? next('Los geht’s') : ''}
+        ${o.mode !== 'join' && Sync.configured ? `<div id="joinbox" style="display:none"><input type="text" id="joinin" placeholder="Einladungslink hier einfügen" autocomplete="off" style="margin-bottom:8px">
+          <button class="btn primary" data-act="onb-join">Mit Einladung verbinden</button></div>
+          <button class="btn primary" data-act="onb-paste" id="joinpaste">Ich habe eine Einladung</button>
+          <button class="btn" data-act="onb-next">Neu einrichten (ich lade ein)</button>` : (o.mode !== 'join' ? next('Einrichten') : '')}</div>`;
+    }
     case 'who': return `<div class="step"><div class="ico">👋</div><h2>Wer bist du?</h2><p>Das bleibt auf diesem Handy so eingestellt.</p><div class="grow"></div>${dots}
         <button class="btn primary" data-act="onb-who" data-u="je">Ich bin j from e</button><button class="btn" data-act="onb-who" data-u="anke">Ich bin Anke</button></div>`;
     case 'profile': return `<div class="step"><h2>Dein Profil</h2>${profileFormHTML(o.role)}<div class="grow" style="min-height:16px"></div>${dots}
@@ -1345,7 +1356,7 @@ function onbHTML(){
         <div class="grow"></div>${dots}${next()}</div>`;
     case 'invite': return `<div class="step"><div class="ico">💌</div><h2>Jetzt ${esc(nick(other()))} einladen</h2>
         <p>Schick diesen Link. Er ist der Schlüssel – kein Passwort, kein Konto.</p><div class="linkbox">${esc(inviteURL())}</div>
-        <a class="btn primary" style="text-decoration:none" href="https://wa.me/?text=${encodeURIComponent('Hier ist unsere App 💛 Einfach öffnen – der Link ist dein Schlüssel: ' + inviteURL())}" target="_blank" rel="noopener">Per WhatsApp schicken</a>
+        <a class="btn primary" style="text-decoration:none" href="https://wa.me/?text=${encodeURIComponent('Hier ist unsere App 💛 Öffne den Link in Safari, dort steht, wie es weitergeht: ' + inviteURL())}" target="_blank" rel="noopener">Per WhatsApp schicken</a>
         <button class="btn" data-act="share-invite">Teilen …</button><button class="btn" data-act="copy-invite">Link kopieren</button>
         <div class="grow"></div>${dots}${next('Fertig')}</div>`;
   }
@@ -1452,6 +1463,17 @@ document.addEventListener('click', async e => {
     case 'copy-invite': copyText(inviteURL()); break;
     case 'switch-user': S.me = other(); await meta.set('device', { user:S.me, spaceId:S.spaceId, secret:S.secret }); closeSheet(); S.tab = 'home'; render(); toast(`Ansicht: ${nick(S.me)}`); break;
     case 'onb-next': onbNext(); break;
+    case 'copy-join': copyText(location.href); t.textContent = '✓ Kopiert – jetzt Teilen → Zum Home-Bildschirm'; break;
+    case 'onb-paste': {
+      $('#joinbox').style.display = 'block'; t.style.display = 'none';
+      try { const c = await navigator.clipboard.readText(); if (/join=|^[a-f0-9]{16,}$/i.test(c.trim())) $('#joinin').value = c.trim(); } catch (_) {}
+      $('#joinin').focus(); break;
+    }
+    case 'onb-join': {
+      const v = ($('#joinin').value || '').trim(), mm = v.match(/join=([a-f0-9]{16,})/i) || v.match(/^([a-f0-9]{16,})$/i);
+      if (!mm) { toast('Das sieht nicht nach einer Einladung aus'); break; }
+      S.onb.mode = 'join'; S.onb.secret = mm[1]; S.onb.step = 'who'; render(); window.scrollTo(0, 0); break;
+    }
     case 'onb-who': S.onb.role = u; S.onb.step = 'profile'; render(); window.scrollTo(0, 0); break;
     case 'onb-profile': onbProfile(); break;
     case 'onb-push': try { await enablePush(); const p = $('#pushst'); if (p) p.innerHTML = '<span class="ok">✓ Benachrichtigungen aktiv</span>'; setTimeout(onbNext, 700); } catch (err) { const p = $('#pushst'); if (p) p.textContent = err.message; } break;
