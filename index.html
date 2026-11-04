@@ -397,6 +397,16 @@ body.dark-tab .tabbar .icon-btn{color:#fff}
 .pcard .pc-th img,.pcard .pc-th video{width:100%;height:100%;object-fit:cover}
 .pcard .pc-th .tp{width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#fff;padding:10px;font-weight:600;text-align:center}
 .pcard span{font-size:13px;opacity:.9}
+.topbar .hr{display:flex;align-items:center;flex:0 0 auto}
+.hometop .hl{flex:1 1 auto;overflow:hidden}
+.feedsel .fm{font-size:20px;font-weight:700;gap:4px}
+.feedsel .fm svg{width:18px;height:18px}
+.fadein{animation:fadein .35s ease}
+@keyframes fadein{from{opacity:0;transform:translateY(4px)}}
+.plusbtn svg{width:27px;height:27px}
+.prof{gap:14px}
+.stats span{font-size:12.5px;white-space:nowrap}
+.stats > div{min-width:0;padding:0 2px}
 </style>
 </head>
 <body>
@@ -512,6 +522,7 @@ const I = {
   sound:    sv('<path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M17 8.5a5 5 0 0 1 0 7M19.5 6a8.5 8.5 0 0 1 0 12"/>'),
   back:     sv('<path d="M15 5l-7 7 7 7"/>'),
   gear:     sv('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>'),
+  plusPlain:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 4v16M4 12h16"/></svg>`,
   reels:    sv('<rect x="3" y="3" width="18" height="18" rx="5"/><path d="M3 8.5h18M8 3l3 5.5M14 3l3 5.5"/><path d="M10 12v6l5-3z" fill="currentColor" stroke="none"/>'),
   reelsOn:  `<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5" fill="currentColor"/><path d="M3 8.5h18M8 3l3 5.5M14 3l3 5.5" stroke="var(--bg)" stroke-width="1.9" fill="none"/><path d="M10 12v6l5-3z" fill="var(--bg)"/></svg>`,
   pin:      sv('<path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.6"/>'),
@@ -869,6 +880,7 @@ function render(){
   hydrate(app); watchVideos(); watchViews();
   if (S.tab === 'reels') { const r = $('#reels'); if (r) r.dataset.n = String(posts().filter(p => p.media_type === 'video').length); watchReels(); }
   if (S.tab === 'map') initMap();
+  if (S.tab === 'home') logoSwap();
   if (S.tab === 'activity') { S.actSeen = Date.now(); meta.set('actSeen', S.actSeen); }
   if (aid) { const n = document.getElementById(aid); if (n) { if (sel) { n.value = sel[2]; try { n.setSelectionRange(sel[0], sel[1]); } catch (_) {} } n.focus({ preventScroll:true }); } }
 }
@@ -887,14 +899,19 @@ function homeHTML(){
   else if (mode === 'fav') empty = `<div class="empty"><div class="big">🔖</div><b>Noch keine Favoriten</b>Tipp bei einem Beitrag unten rechts auf das Lesezeichen – dann landet er hier.</div>`;
   else empty = emptyFeedHTML();
   return `<header class="topbar hometop">
-      <div class="hl"><button class="icon-btn" data-act="create" aria-label="Erstellen">${I.plus}</button>
-      <button class="feedsel" data-act="feed-menu" aria-label="Feed wählen"><span class="wordmark">${esc(APP_NAME)}</span><span class="fm">${FEED_MODES[mode]}${I.chev}</span></button></div>
-      <div><button class="icon-btn hbtn" data-act="tab" data-tab="activity" aria-label="Aktivität">${I.heart}${newAct ? '<span class="dot sm"></span>' : ''}</button>
-      <button class="icon-btn hbtn" data-act="tab" data-tab="chat" aria-label="Chat">${I.chat}${u ? `<span class="dot">${u}</span>` : ''}</button></div>
+      <div class="hl"><button class="icon-btn plusbtn" data-act="create" aria-label="Erstellen">${I.plusPlain}</button>
+      <button class="feedsel" data-act="feed-menu" aria-label="Feed wählen">${S.logoDone ? feedLabel() : `<span class="wordmark">${esc(APP_NAME)}</span>`}</button></div>
+      <div class="hr"><button class="icon-btn hbtn" data-act="tab" data-tab="chat" aria-label="Chat">${I.chat}${u ? `<span class="dot">${u}</span>` : ''}</button></div>
     </header>
     ${mode === 'all' ? storiesBarHTML() + quickHTML() + challengeCardHTML() : ''}
     <main class="feed">${list.length ? list.map(postHTML).join('') : empty}</main>
     <div class="syncline">${syncLine()}</div>`;
+}
+function feedLabel(){ return `<span class="fm">${FEED_MODES[S.feedMode]}${I.chev}</span>`; }
+let logoT = 0;
+function logoSwap(){
+  if (S.logoDone || logoT) return;
+  logoT = setTimeout(() => { S.logoDone = true; const f = $('.feedsel'); if (f) { f.innerHTML = feedLabel(); f.firstElementChild.classList.add('fadein'); } }, 2200);
 }
 function activityCount(){
   const seen = S.actSeen || 0;
@@ -1125,7 +1142,7 @@ function profileHTML(r){
   const week = ps.filter(p => Date.now() - p.created_at < 7*DAY).length + st.filter(s => Date.now() - s.created_at < 7*DAY).length;
   const own = r === S.me;
   const head = own
-    ? `<h1>${esc(nick(r))}</h1><button class="icon-btn" data-act="settings" aria-label="Einstellungen">${I.gear}</button>`
+    ? `<h1>${esc(nick(r))}</h1><div class="hr"><button class="icon-btn hbtn" data-act="tab" data-tab="activity" aria-label="Aktivität">${I.heart}${activityCount() ? '<span class="dot sm"></span>' : ''}</button><button class="icon-btn" data-act="settings" aria-label="Einstellungen">${I.gear}</button></div>`
     : `<div style="display:flex;align-items:center;gap:4px"><button class="icon-btn" data-act="tab" data-tab="home" aria-label="Zurück">${I.back}</button><h1>${esc(nick(r))}</h1></div>`;
   let body;
   if (S.profileTab === 'archive') {
@@ -1728,7 +1745,7 @@ document.addEventListener('click', async e => {
     case 'fav': toggleFav(id); break;
     case 'repost': repostPost(id); break;
     case 'share-post': sharePost(id); break;
-    case 'feed-menu': e.stopPropagation(); if ($('#popmenu')) closeFeedMenu(); else openFeedMenu(); break;
+    case 'feed-menu': e.stopPropagation(); if (!S.logoDone) { S.logoDone = true; clearTimeout(logoT); t.innerHTML = feedLabel(); } if ($('#popmenu')) closeFeedMenu(); else openFeedMenu(); break;
     case 'feed-mode': S.feedMode = t.dataset.m; meta.set('feedMode', S.feedMode); closeFeedMenu(); render(); window.scrollTo({ top:0 }); break;
     case 'reel-tap': { const now = Date.now(); if (taps[id] && now - taps[id] < 320) { taps[id] = 0; setLike(id, 'on'); t.play().catch(() => {}); } else { taps[id] = now; const v = t; if (v.paused) v.play().catch(() => {}); else v.pause(); } break; }
     case 'reel-mute': reelMuted = !reelMuted; $$('.reel video').forEach(v => v.muted = reelMuted); $$('.rmute').forEach(b => b.innerHTML = reelMuted ? I.muted : I.sound); break;
