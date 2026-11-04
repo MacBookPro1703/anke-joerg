@@ -326,6 +326,77 @@ label.fl{display:block;font-weight:600;margin:14px 0 6px}
 .erow input,.erow textarea{background:none;border:0;border-radius:0;padding:8px 0;font-size:16px}
 .erow small{display:block}
 button.erow > div{padding-top:9px;font-size:15px}
+/* Kopfzeile Home mit Feed-Auswahl */
+.hometop{padding-left:6px}
+.hometop .hl{display:flex;align-items:center;gap:2px;min-width:0}
+.feedsel{background:none;border:0;padding:4px 6px;display:flex;align-items:baseline;gap:8px;cursor:pointer;min-width:0}
+.feedsel .fm{display:inline-flex;align-items:center;gap:2px;font-weight:700;font-size:14px;white-space:nowrap}
+.feedsel .fm svg{width:16px;height:16px;stroke-width:2.4}
+.dot.sm{min-width:9px;width:9px;height:9px;padding:0;top:6px;right:6px}
+.popmenu{position:fixed;z-index:70;top:calc(50px + env(safe-area-inset-top));left:max(12px,calc(50% - 223px));background:var(--sheet);border-radius:14px;
+  box-shadow:0 8px 30px rgba(0,0,0,.18);min-width:210px;overflow:hidden;animation:tin .15s}
+.popmenu button{display:flex;align-items:center;justify-content:space-between;width:100%;background:none;border:0;border-bottom:1px solid var(--line);padding:13px 16px;font-size:15px;font-weight:600;cursor:pointer;text-align:left}
+.popmenu button:last-child{border-bottom:0}
+.popmenu i{display:flex}.popmenu i svg{width:22px;height:22px}
+.popmenu .ck{color:var(--accent)}
+/* Reels */
+body.dark-tab{background:#000}
+body.dark-tab .tabbar{background:#000;color:#fff;border-top-color:#262626}
+body.dark-tab .tabbar .icon-btn{color:#fff}
+.reels{height:calc(100dvh - 52px - env(safe-area-inset-bottom));overflow-y:auto;scroll-snap-type:y mandatory;background:#000;color:#fff;position:relative}
+.rtop{position:sticky;top:0;height:0;z-index:5}
+.rtop b{position:absolute;left:16px;top:calc(12px + env(safe-area-inset-top));font-size:22px;text-shadow:0 1px 6px rgba(0,0,0,.5)}
+.reel{position:relative;height:calc(100dvh - 52px - env(safe-area-inset-bottom));scroll-snap-align:start;overflow:hidden;background:#000}
+.reel video{width:100%;height:100%;object-fit:cover;display:block}
+.rside{position:absolute;right:6px;bottom:90px;display:flex;flex-direction:column;gap:10px;z-index:3}
+.rside .icon-btn{color:#fff;flex-direction:column;filter:drop-shadow(0 1px 3px rgba(0,0,0,.5))}
+.rside .icon-btn svg{width:28px;height:28px}
+.rside .like.on{color:var(--like)}
+.rside small{font-size:12px;font-weight:600;color:#fff;margin-top:2px}
+.rcap{position:absolute;left:0;right:60px;bottom:0;padding:40px 14px 18px;background:linear-gradient(transparent,rgba(0,0,0,.55));z-index:2}
+.rcap .who{display:flex;align-items:center;gap:8px;background:none;border:0;padding:0;color:#fff;cursor:pointer;font-size:14px}
+.rcap p{margin:6px 0 2px;font-size:14px;white-space:pre-wrap}
+.rcap small{opacity:.75;font-size:12px}
+.empty-reels{display:flex;flex-direction:column;justify-content:center}
+/* Karte */
+.map{height:52dvh;background:var(--soft);z-index:1}
+.mapbar{padding:12px 14px 4px}
+.mpin-wrap{background:none;border:0}
+.mpin{width:46px;height:46px;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.35);background:linear-gradient(135deg,#ff9a4c,#e8457c);display:flex;align-items:center;justify-content:center;overflow:hidden;font-size:24px}
+.mpin img{width:100%;height:100%;object-fit:cover}
+/* Profil bearbeiten (Seite) */
+.editprof{min-height:100dvh;padding-bottom:30px}
+.ep-top{justify-content:space-between;padding-left:4px}
+.ep-top h1{font-size:16px}
+.ep-pic{display:flex;flex-direction:column;align-items:center;gap:8px;padding:18px 0 14px}
+.ep-pic .link{margin:0;font-size:14px}
+.ep-fields{padding:0 16px;display:flex;flex-direction:column;gap:10px}
+.fbox{display:block;position:relative;border:1px solid var(--line);border-radius:12px;padding:7px 12px 6px;background:var(--bg);cursor:text}
+.fbox small{display:block;font-size:12px;color:var(--muted);margin-bottom:1px}
+.fbox input,.fbox textarea{width:100%;border:0;background:none;padding:0;border-radius:0;font-size:16px;color:var(--fg);outline:none;resize:none}
+.fbox input[readonly]{color:var(--muted)}
+.fbox i{position:absolute;right:12px;bottom:6px;font-style:normal;font-size:11px;color:var(--muted)}
+.fbox:focus-within{border-color:var(--fg)}
+.frow{width:100%;text-align:left;cursor:pointer;display:grid;grid-template-columns:1fr auto;align-items:center}
+.frow small{grid-column:1/3}
+.frow span{font-size:16px}
+.frow svg{width:18px;height:18px;transform:rotate(-90deg);color:var(--muted)}
+.ep-links{margin:18px 0 10px;border-top:1px solid var(--line)}
+.ep-links button{display:block;width:100%;text-align:left;background:none;border:0;border-bottom:1px solid var(--line);padding:14px 16px;font-size:15px;color:var(--accent);cursor:pointer}
+.ep-pics{display:flex;justify-content:center;padding:4px 0 12px}
+/* Beitragsleiste mit Zahlen */
+.pa{gap:2px;padding:4px 6px 0 4px}
+.pa .icon-btn{padding:7px 6px;gap:4px}
+.pa .icon-btn svg{width:24px;height:24px}
+.pa .cnt{font-size:14px;font-weight:600;margin-left:3px}
+.pa .rp-on{color:#1a9b4b}
+.pa .views{display:inline-flex;align-items:center;color:var(--fg);padding:7px 6px}
+.pa .views svg{width:21px;height:21px}
+.pcard{display:flex;flex-direction:column;gap:3px;border:0;cursor:pointer;text-align:left;font:inherit;min-width:160px}
+.pcard .pc-th{width:100%;aspect-ratio:1/1;border-radius:12px;overflow:hidden;margin-bottom:4px;background:rgba(0,0,0,.1)}
+.pcard .pc-th img,.pcard .pc-th video{width:100%;height:100%;object-fit:cover}
+.pcard .pc-th .tp{width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#fff;padding:10px;font-weight:600;text-align:center}
+.pcard span{font-size:13px;opacity:.9}
 </style>
 </head>
 <body>
@@ -441,6 +512,19 @@ const I = {
   sound:    sv('<path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M17 8.5a5 5 0 0 1 0 7M19.5 6a8.5 8.5 0 0 1 0 12"/>'),
   back:     sv('<path d="M15 5l-7 7 7 7"/>'),
   gear:     sv('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>'),
+  reels:    sv('<rect x="3" y="3" width="18" height="18" rx="5"/><path d="M3 8.5h18M8 3l3 5.5M14 3l3 5.5"/><path d="M10 12v6l5-3z" fill="currentColor" stroke="none"/>'),
+  reelsOn:  `<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5" fill="currentColor"/><path d="M3 8.5h18M8 3l3 5.5M14 3l3 5.5" stroke="var(--bg)" stroke-width="1.9" fill="none"/><path d="M10 12v6l5-3z" fill="var(--bg)"/></svg>`,
+  pin:      sv('<path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.6"/>'),
+  pinOn:    `<svg viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z" fill="currentColor"/><circle cx="12" cy="9.5" r="2.6" fill="var(--bg)"/></svg>`,
+  save:     sv('<path d="M6 3.5h12v17l-6-4.5-6 4.5z"/>'),
+  saveOn:   sv('<path d="M6 3.5h12v17l-6-4.5-6 4.5z"/>', true),
+  chev:     sv('<path d="m6 9 6 6 6-6"/>'),
+  check:    sv('<path d="m5 12.5 4.5 4.5L19 7"/>'),
+  people:   sv('<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.7a3.5 3.5 0 0 1 0 6.6M18.5 20a6.5 6.5 0 0 0-3-5.5"/>'),
+  star:     sv('<path d="m12 3.5 2.6 5.4 5.9.8-4.3 4.1 1 5.9L12 17l-5.2 2.7 1-5.9-4.3-4.1 5.9-.8z"/>'),
+  repost:   sv('<path d="M17 2.5l3 3-3 3"/><path d="M4 11v-1.5a4 4 0 0 1 4-4h12"/><path d="M7 21.5l-3-3 3-3"/><path d="M20 13v1.5a4 4 0 0 1-4 4H4"/>'),
+  send:     sv('<path d="M21.5 3 3 10.2l7.2 3.1L21.5 3zM10.2 13.3l3.1 7.2L21.5 3"/>'),
+  play:     sv('<path d="M7 4.5v15l12-7.5z"/>'),
   bell:     sv('<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/>')
 };
 
@@ -538,12 +622,15 @@ const meta = { get: k => DB.get('meta', k), set: (k, v) => DB.put('meta', v, k) 
 
 /* ---------- Zustand ---------- */
 const D = {}; Object.keys(TABLES).forEach(t => D[t] = new Map());
-const S = { me:null, spaceId:null, secret:null, tab:'home', profileOf:null, profileTab:'grid', q:'', onb:null, handled:new Set(), recapSeen:new Set() };
+const S = { me:null, spaceId:null, secret:null, tab:'home', profileOf:null, profileTab:'grid', q:'', feedMode:'all', onb:null, handled:new Set(), recapSeen:new Set() };
 const other = () => S.me === 'je' ? 'anke' : 'je';
 const prof  = r => D.profiles.get(r) || { role:r, nick:USERS[r].nick, emoji:USERS[r].emoji, sound:USERS[r].sound, avatar_path:null };
 const nick  = r => r === 'je' ? USERS.je.nick : (prof(r).nick || USERS[r].nick);
 const posts = () => [...D.posts.values()].filter(p => !p.deleted).sort((a,b) => b.created_at - a.created_at);
-const likesOf = id => [...D.reactions.values()].filter(r => r.post_id === id && r.on).sort((a,b) => a.at - b.at);
+const likesOf = id => [...D.reactions.values()].filter(r => r.post_id === id && r.on && !String(r.role).includes(':')).sort((a,b) => a.at - b.at);
+const marks = (id, kind) => [...D.reactions.values()].filter(r => r.post_id === id && r.on && String(r.role).endsWith(':' + kind));
+const msgText = t => { const m = /^\[\[post:([\w-]+)\]\]$/.exec(t || ''); return m ? '📎 hat dir einen Beitrag geschickt' : t; };
+const isFav = id => { const r = D.reactions.get(id + '|' + S.me + ':fav'); return !!(r && r.on); };
 const commentsOf = id => [...D.comments.values()].filter(c => c.post_id === id && !c.deleted).sort((a,b) => a.created_at - b.created_at);
 const storiesAll = () => [...D.stories.values()].filter(s => !s.deleted).sort((a,b) => a.created_at - b.created_at);
 const storiesOf = (r, active) => storiesAll().filter(s => s.author === r && (!active || Date.now() - s.created_at < DAY));
@@ -653,7 +740,7 @@ function effects(t, row, prev, live){
   if (!live || prev) return;
   if (t === 'messages' && row.author !== S.me) {
     if (S.tab === 'chat' && document.visibilityState === 'visible') markRead();
-    else { Sound.play('pling'); toast(`💬 ${nick(row.author)}: ${row.text.slice(0, 60)}`); }
+    else { Sound.play('pling'); toast(`💬 ${nick(row.author)}: ${msgText(row.text).slice(0, 60)}`); }
   }
   if (t === 'posts' && row.author !== S.me) toast(`✨ ${nick(row.author)} hat einen Moment geteilt`);
 }
@@ -771,21 +858,132 @@ function render(){
   else if (S.tab === 'activity') h = activityHTML();
   else if (S.tab === 'profile') h = profileHTML(S.profileOf || S.me);
   else if (S.tab === 'ufeed') h = ufeedHTML(S.profileOf);
+  else if (S.tab === 'editprof') { if ($('#editprof')) return; app.innerHTML = editProfHTML(); hydrate(app); return; }
+  else if (S.tab === 'reels') {
+    if ($('#reels') && $('#reels').dataset.n === String(posts().filter(p => p.media_type === 'video').length)) { $$('.reel').forEach(r => updateReel(r.id.slice(2))); return; }
+    h = reelsHTML();
+  }
+  else if (S.tab === 'map') { if ($('#map') && LMap) return; h = mapHTML(); }
   app.innerHTML = h + tabbarHTML();
-  hydrate(app); watchVideos();
+  document.body.classList.toggle('dark-tab', S.tab === 'reels');
+  hydrate(app); watchVideos(); watchViews();
+  if (S.tab === 'reels') { const r = $('#reels'); if (r) r.dataset.n = String(posts().filter(p => p.media_type === 'video').length); watchReels(); }
+  if (S.tab === 'map') initMap();
+  if (S.tab === 'activity') { S.actSeen = Date.now(); meta.set('actSeen', S.actSeen); }
   if (aid) { const n = document.getElementById(aid); if (n) { if (sel) { n.value = sel[2]; try { n.setSelectionRange(sel[0], sel[1]); } catch (_) {} } n.focus({ preventScroll:true }); } }
 }
 
+const FEED_MODES = { all:'Für dich', other:'Gefolgt', fav:'Favoriten' };
+function feedPosts(){
+  if (S.feedMode === 'other') return posts().filter(p => p.author !== S.me);
+  if (S.feedMode === 'fav') return posts().filter(p => isFav(p.id));
+  return posts();
+}
 function homeHTML(){
-  const u = unread();
-  return `<header class="topbar">
-      <span class="wordmark">${esc(APP_NAME)}</span>
-      <div><button class="icon-btn" data-act="create" aria-label="Erstellen">${I.plus}</button>
+  const u = unread(), mode = S.feedMode, list = feedPosts();
+  const newAct = activityCount();
+  let empty;
+  if (mode === 'other') empty = `<div class="empty"><div class="big">👀</div><b>Noch nichts von ${esc(nick(other()))}</b>Hier erscheinen nur die Momente von ${esc(nick(other()))}.</div>`;
+  else if (mode === 'fav') empty = `<div class="empty"><div class="big">🔖</div><b>Noch keine Favoriten</b>Tipp bei einem Beitrag unten rechts auf das Lesezeichen – dann landet er hier.</div>`;
+  else empty = emptyFeedHTML();
+  return `<header class="topbar hometop">
+      <div class="hl"><button class="icon-btn" data-act="create" aria-label="Erstellen">${I.plus}</button>
+      <button class="feedsel" data-act="feed-menu" aria-label="Feed wählen"><span class="wordmark">${esc(APP_NAME)}</span><span class="fm">${FEED_MODES[mode]}${I.chev}</span></button></div>
+      <div><button class="icon-btn hbtn" data-act="tab" data-tab="activity" aria-label="Aktivität">${I.heart}${newAct ? '<span class="dot sm"></span>' : ''}</button>
       <button class="icon-btn hbtn" data-act="tab" data-tab="chat" aria-label="Chat">${I.chat}${u ? `<span class="dot">${u}</span>` : ''}</button></div>
     </header>
-    ${storiesBarHTML()}${quickHTML()}${challengeCardHTML()}
-    <main class="feed">${posts().length ? posts().map(postHTML).join('') : emptyFeedHTML()}</main>
+    ${mode === 'all' ? storiesBarHTML() + quickHTML() + challengeCardHTML() : ''}
+    <main class="feed">${list.length ? list.map(postHTML).join('') : empty}</main>
     <div class="syncline">${syncLine()}</div>`;
+}
+function activityCount(){
+  const seen = S.actSeen || 0;
+  let n = 0;
+  posts().forEach(p => { if (p.author === S.me) { likesOf(p.id).forEach(l => { if (l.role !== S.me && l.at > seen) n++; }); commentsOf(p.id).forEach(c => { if (c.author !== S.me && c.created_at > seen) n++; }); } });
+  return n;
+}
+function openFeedMenu(){
+  closeFeedMenu();
+  const m = document.createElement('div'); m.className = 'popmenu'; m.id = 'popmenu';
+  m.innerHTML = [['all', I.homeOn], ['other', I.people], ['fav', I.star]].map(([k, ic]) =>
+    `<button data-act="feed-mode" data-m="${k}"><span>${FEED_MODES[k]}</span>${S.feedMode === k ? `<i class="ck">${I.check}</i>` : `<i>${ic}</i>`}</button>`).join('');
+  document.body.appendChild(m);
+}
+function closeFeedMenu(){ const m = $('#popmenu'); if (m) m.remove(); }
+
+/* ---------- Reels ---------- */
+function reelsHTML(){
+  const vids = posts().filter(p => p.media_type === 'video');
+  if (!vids.length) return `<div class="reels empty-reels"><div class="rtop"><b>Reels</b></div><div class="empty" style="color:#ddd"><div class="big">🎬</div><b style="color:#fff">Noch keine Videos</b>Kurze Videos aus euren Momenten laufen hier nacheinander durch.<div style="max-width:220px;margin:18px auto 0"><button class="btn primary" data-act="create">Video teilen</button></div></div></div>`;
+  return `<div class="reels" id="reels"><div class="rtop"><b>Reels</b></div>${vids.map(p => reelItemHTML(p)).join('')}</div>`;
+}
+function reelItemHTML(p){
+  const likes = likesOf(p.id), liked = likes.some(l => l.role === S.me), cms = commentsOf(p.id).length, fav = isFav(p.id);
+  return `<section class="reel" id="r-${p.id}">
+    <video data-media="${esc(p.media_path)}" muted playsinline loop preload="metadata" data-act="reel-tap" data-id="${p.id}"></video>
+    <div class="bigheart">${I.heartOn}</div>
+    <div class="rside">
+      <button class="icon-btn like ${liked ? 'on' : ''}" data-act="like" data-id="${p.id}">${liked ? I.heartOn : I.heart}<small>${likes.length || ''}</small></button>
+      <button class="icon-btn" data-act="comments" data-id="${p.id}">${I.comment}<small>${cms || ''}</small></button>
+      <button class="icon-btn" data-act="fav" data-id="${p.id}">${fav ? I.saveOn : I.save}</button>
+      <button class="icon-btn rmute" data-act="reel-mute">${I.muted}</button>
+    </div>
+    <div class="rcap"><button class="who" data-act="profile" data-u="${p.author}">${avatar(p.author, 30)}<b>${esc(nick(p.author))}</b></button>${p.text ? `<p>${esc(p.text)}</p>` : ''}<small>${ago(p.created_at)}</small></div>
+  </section>`;
+}
+let reelMuted = true, reelObs;
+function watchReels(){
+  if (reelObs) reelObs.disconnect();
+  const root = $('#reels'); if (!root || !('IntersectionObserver' in window)) return;
+  reelObs = new IntersectionObserver(es => es.forEach(e => { const v = e.target; if (e.isIntersecting && e.intersectionRatio > 0.7) { v.muted = reelMuted; v.play().catch(() => {}); } else v.pause(); }), { threshold:[0, .7, 1] });
+  $$('.reel video', root).forEach(v => reelObs.observe(v));
+}
+function updateReel(id){
+  const el = $('#r-' + id), p = D.posts.get(id); if (!el || !p) return false;
+  const likes = likesOf(id), liked = likes.some(l => l.role === S.me);
+  const lb = $('[data-act=like]', el); lb.className = 'icon-btn like ' + (liked ? 'on bump' : ''); lb.innerHTML = (liked ? I.heartOn : I.heart) + `<small>${likes.length || ''}</small>`;
+  $('[data-act=fav]', el).innerHTML = isFav(id) ? I.saveOn : I.save;
+  return true;
+}
+
+/* ---------- Karte ---------- */
+let LMap = null;
+function loadLeaflet(){
+  if (window.L) return Promise.resolve();
+  return new Promise((res, rej) => {
+    const c = document.createElement('link'); c.rel = 'stylesheet'; c.href = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css'; document.head.appendChild(c);
+    const j = document.createElement('script'); j.src = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js'; j.onload = res; j.onerror = () => rej(new Error('Karte konnte nicht geladen werden')); document.head.appendChild(j);
+  });
+}
+const lastPos = r => pings().find(g => g.from_role === r && g.lat != null);
+function mapHTML(){
+  const locs = pings().filter(g => g.lat != null).slice(0, 15);
+  return `<header class="topbar"><h1>Karte</h1></header>
+    <div id="map" class="map"></div>
+    <div class="mapbar"><button class="btn primary" data-act="ping" data-k="findme">📍 Meinen Standort an ${esc(nick(other()))} schicken</button>
+    <p class="fine" style="margin:8px 0 0;text-align:center">Ungefähr (ca. 100 m), nur wenn ihr ihn schickt – nie automatisch.</p></div>
+    ${locs.length ? `<h4 class="act-h">Zuletzt geteilt</h4>${locs.map(g => `<div class="act">${avatar(g.from_role, 40)}<p><b>${esc(nick(g.from_role))}</b> ${g.kind === 'sos' ? '🆘 Komm vorbei' : '📍 Standort'} <span class="muted">${ago(g.created_at)}</span></p><a class="link strong" href="${mapURL(g)}" target="_blank" rel="noopener">Öffnen</a></div>`).join('')}`
+      : `<div class="empty" style="padding-top:24px">Noch keine Standorte geteilt.</div>`}`;
+}
+async function initMap(){
+  const el = $('#map'); if (!el) return;
+  try { await loadLeaflet(); } catch (e) { el.innerHTML = `<div class="empty">${esc(e.message)}</div>`; return; }
+  if (!$('#map')) return;
+  if (LMap) { LMap.remove(); LMap = null; }
+  LMap = L.map('map', { zoomControl:false, attributionControl:true }).setView([51.2, 10.4], 5);
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom:18, attribution:'© OpenStreetMap' }).addTo(LMap);
+  const pts = [];
+  ['je', 'anke'].forEach(r => {
+    const g = lastPos(r); if (!g) return;
+    const p = prof(r);
+    const html = `<div class="mpin">${p.avatar_path ? `<img data-media="${esc(p.avatar_path)}" alt="">` : `<span>${esc(p.emoji || '🙂')}</span>`}</div>`;
+    const icon = L.divIcon({ html, className:'mpin-wrap', iconSize:[46, 46], iconAnchor:[23, 23] });
+    L.marker([g.lat, g.lng], { icon }).addTo(LMap).bindPopup(`<b>${esc(nick(r))}</b><br>${ago(g.created_at)}`);
+    L.circle([g.lat, g.lng], { radius:Math.max(100, g.acc || 100), color:'#e8457c', weight:1, fillOpacity:.08 }).addTo(LMap);
+    pts.push([g.lat, g.lng]);
+  });
+  if (pts.length === 1) LMap.setView(pts[0], 14); else if (pts.length > 1) LMap.fitBounds(pts, { padding:[50, 50], maxZoom:15 });
+  hydrate(el);
 }
 function syncLine(){
   if (!Sync.configured || S.spaceId === 'local') return 'Nur auf diesem Gerät gespeichert';
@@ -859,8 +1057,13 @@ function postHTML(p){
       <b data-act="profile" data-u="${p.author}">${esc(nick(p.author))}</b>
       <button class="icon-btn more" data-act="post-menu" data-id="${p.id}" aria-label="Mehr">${I.more}</button></header>
     ${media}
-    <div class="pa"><button class="icon-btn like ${liked ? 'on' : ''}" data-act="like" data-id="${p.id}" aria-label="Gefällt mir">${liked ? I.heartOn : I.heart}</button>
-      <button class="icon-btn" data-act="comments" data-id="${p.id}" aria-label="Kommentieren">${I.comment}</button></div>
+    <div class="pa">
+      <button class="icon-btn like ${liked ? 'on' : ''}" data-act="like" data-id="${p.id}" aria-label="Gefällt mir">${liked ? I.heartOn : I.heart}${likes.length ? `<span class="cnt">${likes.length}</span>` : ''}</button>
+      <button class="icon-btn" data-act="comments" data-id="${p.id}" aria-label="Kommentieren">${I.comment}${cms.length ? `<span class="cnt">${cms.length}</span>` : ''}</button>
+      <button class="icon-btn ${marks(p.id, 'repost').some(r => r.role.startsWith(S.me)) ? 'rp-on' : ''}" data-act="repost" data-id="${p.id}" aria-label="In Story reposten">${I.repost}${marks(p.id, 'repost').length ? `<span class="cnt">${marks(p.id, 'repost').length}</span>` : ''}</button>
+      <button class="icon-btn" data-act="share-post" data-id="${p.id}" aria-label="Senden">${I.send}${marks(p.id, 'share').length ? `<span class="cnt">${marks(p.id, 'share').length}</span>` : ''}</button>
+      <span class="views" title="Aufrufe">${I.play}<span class="cnt">${marks(p.id, 'view').length}</span></span>
+      <button class="icon-btn" style="margin-left:auto" data-act="fav" data-id="${p.id}" aria-label="Zu Favoriten">${isFav(p.id) ? I.saveOn : I.save}</button></div>
     <div class="pb">${likers.length ? `<p class="likes">Gefällt ${likers.join(' und ')}</p>` : ''}
       ${ch ? `<span class="tag-ch">🎯 ${esc(ch)}</span>` : ''}
       ${p.media_path && p.text ? `<p><b>${esc(nick(p.author))}</b> ${esc(p.text)}</p>` : ''}${cm}<p class="time">${ago(p.created_at)}</p></div>
@@ -873,9 +1076,9 @@ function tabbarHTML(){
   const t = S.tab, own = (t === 'profile' || t === 'ufeed') && (!S.profileOf || S.profileOf === S.me);
   return `<nav class="tabbar">
     <button class="icon-btn" data-act="tab" data-tab="home" aria-label="Home">${t === 'home' ? I.homeOn : I.home}</button>
+    <button class="icon-btn" data-act="tab" data-tab="reels" aria-label="Reels">${t === 'reels' ? I.reelsOn : I.reels}</button>
+    <button class="icon-btn" data-act="tab" data-tab="map" aria-label="Karte">${t === 'map' ? I.pinOn : I.pin}</button>
     <button class="icon-btn" data-act="tab" data-tab="search" aria-label="Suche">${t === 'search' ? I.searchOn : I.search}</button>
-    <button class="icon-btn" data-act="create" aria-label="Erstellen">${I.plus}</button>
-    <button class="icon-btn" data-act="tab" data-tab="activity" aria-label="Aktivität">${t === 'activity' ? I.heartOn : I.heart}</button>
     <button class="icon-btn ${own ? 'on' : ''}" data-act="tab" data-tab="profile" aria-label="Profil">${avatar(S.me, 27)}</button>
   </nav>`;
 }
@@ -971,13 +1174,15 @@ function renderChat(){
   ms.forEach(m => {
     const dl = dayLabel(m.created_at);
     if (dl !== lastDay) { h += `<div class="daysep">${esc(dl)}</div>`; lastDay = dl; }
-    h += `<div class="bub ${m.author === S.me ? 'me' : 'them'}">${esc(m.text)}<time>${hhmm(m.created_at)}</time></div>`;
+    const pm = /^\[\[post:([\w-]+)\]\]$/.exec(m.text || ''), sp = pm && D.posts.get(pm[1]);
+    if (pm) h += `<button class="bub pcard ${m.author === S.me ? 'me' : 'them'}" data-act="open-post" data-id="${pm[1]}">${sp && !sp.deleted ? `<div class="pc-th">${thumb(sp)}</div><b>${esc(nick(sp.author))}</b><span>${esc((sp.text || '').slice(0, 60))}</span>` : '<span>Beitrag nicht mehr da</span>'}<time>${hhmm(m.created_at)}</time></button>`;
+    else h += `<div class="bub ${m.author === S.me ? 'me' : 'them'}">${esc(m.text)}<time>${hhmm(m.created_at)}</time></div>`;
   });
   const lastMine = [...ms].reverse().find(m => m.author === S.me);
   if (lastMine && ms[ms.length - 1] === lastMine) h += `<div class="rd">${lastMine.read_at ? 'Gelesen ' + hhmm(lastMine.read_at) : 'Gesendet'}</div>`;
   if (!ms.length) h = `<div class="empty">Schreib ${esc(nick(other()))} die erste Nachricht 💬</div>`;
   const atBottom = window.innerHeight + window.scrollY >= document.body.scrollHeight - 80;
-  log.innerHTML = h;
+  log.innerHTML = h; hydrate(log);
   if (atBottom || !log.dataset.init) { window.scrollTo(0, document.body.scrollHeight); log.dataset.init = '1'; }
   markRead();
 }
@@ -1123,7 +1328,7 @@ function refreshPost(p, pop){
   const el = $('#p-' + p.id);
   if (!el) { scheduleRender(); return; }
   el.outerHTML = postHTML(p);
-  const n = $('#p-' + p.id); hydrate(n); watchVideos();
+  const n = $('#p-' + p.id); hydrate(n); watchVideos(); if (viewObs) viewObs.observe(n);
   if (pop) $('.bigheart', n).classList.add('pop');
   const lb = $('.like', n); if (lb && lb.classList.contains('on')) lb.classList.add('bump');
 }
@@ -1132,7 +1337,47 @@ async function setLike(id, mode){
   const cur = D.reactions.get(id + '|' + S.me), on = cur && cur.on;
   if (on && mode === 'toggle') await put('reactions', { post_id:id, role:S.me, at:cur.at, on:false });
   else if (!on) await put('reactions', { post_id:id, role:S.me, at:Date.now(), on:true });
+  if (S.tab === 'reels' && updateReel(id)) { if (mode === 'on') { const h = $('#r-' + id + ' .bigheart'); h.classList.remove('pop'); void h.offsetWidth; h.classList.add('pop'); } return; }
   refreshPost(p, mode === 'on');
+}
+async function repostPost(id){
+  const p = D.posts.get(id); if (!p) return;
+  const by = p.author === S.me ? '' : `↻ ${nick(p.author)}: `;
+  await put('stories', { id:newId(), author:S.me, created_at:Date.now(), text:(by + (p.text || '')).trim(), media_path:p.media_path, media_type:p.media_type, w:p.w, h:p.h, d:p.d || 0, bg:p.bg || GRADS[0], deleted:false });
+  await put('reactions', { post_id:id, role:S.me + ':repost', at:Date.now(), on:true });
+  toast('In deiner Story geteilt ↻'); refreshPost(p);
+}
+async function sharePost(id){
+  const p = D.posts.get(id); if (!p) return;
+  await put('messages', { id:newId(), author:S.me, text:`[[post:${id}]]`, created_at:Date.now(), read_at:null, deleted:false });
+  await put('reactions', { post_id:id, role:S.me + ':share', at:Date.now(), on:true });
+  Sync.push('message', nick(S.me), '📎 hat dir einen Beitrag geschickt');
+  toast(`An ${nick(other())} geschickt ✈`); refreshPost(p);
+}
+let viewObs; const viewT = {};
+function watchViews(){
+  if (viewObs) viewObs.disconnect();
+  if (!('IntersectionObserver' in window)) return;
+  viewObs = new IntersectionObserver(es => es.forEach(e => {
+    const id = e.target.id.replace(/^[pr]-/, '');
+    if (e.isIntersecting && e.intersectionRatio > 0.6) { if (!viewT[id]) viewT[id] = setTimeout(() => markView(id), 1200); }
+    else { clearTimeout(viewT[id]); viewT[id] = 0; }
+  }), { threshold:[0, .6, 1] });
+  $$('.feed .post, .reel').forEach(el => viewObs.observe(el));
+}
+async function markView(id){
+  const p = D.posts.get(id); if (!p || p.author === S.me) return;
+  const k = id + '|' + S.me + ':view'; if (D.reactions.get(k)) return;
+  await put('reactions', { post_id:id, role:S.me + ':view', at:Date.now(), on:true });
+}
+async function toggleFav(id){
+  const p = D.posts.get(id); if (!p) return;
+  const k = S.me + ':fav', on = isFav(id);
+  await put('reactions', { post_id:id, role:k, at:Date.now(), on:!on });
+  toast(on ? 'Aus Favoriten entfernt' : 'Zu Favoriten hinzugefügt 🔖');
+  if (S.tab === 'reels' && updateReel(id)) return;
+  if (S.tab === 'home' && S.feedMode === 'fav') { scheduleRender(); return; }
+  refreshPost(p);
 }
 const taps = {};
 function mediaTap(id, el){
@@ -1281,22 +1526,43 @@ async function saveProfileForm(){
   if (E.avatarURL) { URL.revokeObjectURL(E.avatarURL); E.avatarURL = null; }
 }
 function openProfileEdit(){
-  const r = S.me, p = prof(r), fixed = USERS[r].fixedNick;
+  const r = S.me, p = prof(r);
   E.role = r; E.emoji = p.emoji || USERS[r].emoji; E.sound = p.sound || USERS[r].sound; E.avatarPr = null; E.removePhoto = false;
   if (E.avatarURL) { URL.revokeObjectURL(E.avatarURL); E.avatarURL = null; }
-  openSheet(`<div class="ehead"><button class="link" data-act="close-sheet">Abbrechen</button><b>Profil bearbeiten</b><button class="link strong" data-act="e-save">Fertig</button></div>
-    <div style="display:flex;justify-content:center;margin:14px 0 6px" id="eav">${avatar(r, 86)}</div>
-    <button class="link strong" style="margin:0 auto 6px;display:block" data-act="e-pic">Bild bearbeiten</button>
-    <div id="epic" style="display:none;margin:4px 0 12px">
-      <div class="pick"><label class="btn">Foto wählen<input type="file" id="efile" accept="image/*" hidden></label>${p.avatar_path ? '<button class="btn" data-act="e-nophoto">Foto entfernen</button>' : ''}</div>
-      <div class="emojis">${EMOJIS.map(e => `<button data-act="e-emoji" data-e="${e}" class="${e === E.emoji ? 'on' : ''}">${e}</button>`).join('')}</div>
+  closeSheet(); S.tab = 'editprof'; $('#app').innerHTML = ''; render(); window.scrollTo(0, 0);
+}
+function editProfHTML(){
+  const r = S.me, p = prof(r), fixed = USERS[r].fixedNick, lk = safeLink(p.link);
+  return `<div id="editprof" class="editprof">
+    <header class="topbar ep-top"><button class="icon-btn" data-act="e-back" aria-label="Zurück">${I.back}</button><h1>Profil bearbeiten</h1><span style="width:39px"></span></header>
+    <div class="ep-pic"><div id="eav">${E.avatarURL ? `<div class="av" style="width:90px;height:90px"><img src="${E.avatarURL}" alt=""></div>` : (E.removePhoto ? `<div class="av" style="width:90px;height:90px;font-size:50px">${esc(E.emoji)}</div>` : avatar(r, 90))}</div>
+      <button class="link strong" data-act="e-picmenu">Bild bearbeiten</button></div>
+    <div class="ep-fields">
+      <label class="fbox"><small>Name</small><input type="text" id="enick" value="${esc(nick(r))}" maxlength="24" ${fixed ? 'readonly' : ''} autocomplete="off"></label>
+      <label class="fbox"><small>Benutzername</small><input type="text" value="${esc(nick(r).toLowerCase().replace(/\s+/g, '_'))}" readonly></label>
+      <label class="fbox"><small>Bio</small><textarea id="ebio" rows="2" maxlength="150" placeholder="Bio">${esc(p.bio || '')}</textarea><i id="ebioc">${(p.bio || '').length}/150</i></label>
+      <label class="fbox"><small>Links</small><input type="text" id="elink" value="${esc(p.link || '')}" maxlength="200" placeholder="Link hinzufügen" autocomplete="off" inputmode="url"></label>
+      <button class="fbox frow" data-act="e-sounds"><small>Lieblingston</small><span id="esndl">${soundInfo(E.sound)[1]} ${soundInfo(E.sound)[2]}</span>${I.chev}</button>
+      <div id="esnd" style="display:none"><div class="sounds">${SOUND_LIST.filter(s => s[0] !== 'alarm').map(s => `<button data-act="e-sound" data-s="${s[0]}" class="${s[0] === E.sound ? 'on' : ''}"><span>${s[1]}</span><small>${s[2]}</small></button>`).join('')}</div></div>
     </div>
-    <div class="erow"><label for="enick">Name</label><div><input type="text" id="enick" value="${esc(nick(r))}" maxlength="24" ${fixed ? 'readonly' : ''} autocomplete="off">${fixed ? '<small class="fine">Fest eingestellt</small>' : ''}</div></div>
-    <div class="erow"><label for="ebio">Bio</label><div><textarea id="ebio" rows="3" maxlength="150" placeholder="Ein paar Worte über dich">${esc(p.bio || '')}</textarea><small class="fine" id="ebioc">${(p.bio || '').length}/150</small></div></div>
-    <div class="erow"><label for="elink">Link</label><div><input type="text" id="elink" value="${esc(p.link || '')}" maxlength="200" placeholder="z. B. Lieblingslied oder Website" autocomplete="off" inputmode="url"></div></div>
-    <button class="erow" data-act="e-sounds" style="width:100%;background:none;border:0;border-bottom:1px solid var(--line);text-align:left;cursor:pointer"><label>Lieblingston</label><div id="esndl">${soundInfo(E.sound)[1]} ${soundInfo(E.sound)[2]} ›</div></button>
-    <div id="esnd" style="display:none;margin-top:10px"><div class="sounds">${SOUND_LIST.filter(s => s[0] !== 'alarm').map(s => `<button data-act="e-sound" data-s="${s[0]}" class="${s[0] === E.sound ? 'on' : ''}"><span>${s[1]}</span><small>${s[2]}</small></button>`).join('')}</div></div>
-    <div class="menu" style="margin-top:18px"><button class="btn" data-act="settings">Einstellungen & Einladung</button></div>`, 'tall');
+    <div class="ep-links">
+      <button data-act="settings">Einladungslink & Einstellungen</button>
+      <button data-act="perm-push">Benachrichtigungen</button>
+      <button data-act="howto">So funktioniert Unsergram</button>
+    </div>
+    ${fixed ? '<p class="fine" style="padding:0 16px">Dein Name „j from e“ ist fest eingestellt.</p>' : ''}
+  </div>`;
+}
+function openPicMenu(){
+  const has = prof(S.me).avatar_path && !E.removePhoto || E.avatarURL;
+  openSheet(`<div class="ep-pics">${avatar(S.me, 56)}</div><div class="menu">
+    <label class="btn">Neues Profilbild<input type="file" id="efile" accept="image/*" hidden></label>
+    <button class="btn" data-act="e-emojis">Emoji als Profilbild</button>
+    ${has ? '<button class="btn danger" data-act="e-nophoto">Aktuelles Bild entfernen</button>' : ''}
+    <button class="btn" data-act="close-sheet">Abbrechen</button></div>`);
+}
+async function leaveEditProf(){
+  await saveProfileForm(); S.tab = 'profile'; S.profileOf = null; S.profileTab = 'grid'; $('#app').innerHTML = ''; render(); window.scrollTo(0, 0); toast('Gespeichert');
 }
 
 /* ---------- Einstellungen ---------- */
@@ -1447,10 +1713,11 @@ function watchVideos(){
 /* ---------- Ereignisse ---------- */
 async function copyText(t){ try { await navigator.clipboard.writeText(t); toast('Link kopiert'); } catch (_) { toast('Kopieren ging nicht – Link bitte markieren'); } }
 document.addEventListener('click', async e => {
+  if ($('#popmenu') && !e.target.closest('#popmenu') && !e.target.closest('[data-act=feed-menu]')) closeFeedMenu();
   const t = e.target.closest('[data-act]'); if (!t) return;
   const a = t.dataset.act, id = t.dataset.id, u = t.dataset.u;
   switch (a) {
-    case 'tab': closeSheet(); S.tab = t.dataset.tab; if (S.tab === 'profile') { S.profileOf = null; S.profileTab = 'grid'; } $('#app').innerHTML = ''; render(); if (S.tab !== 'chat') window.scrollTo({ top:0 }); break;
+    case 'tab': closeSheet(); closeFeedMenu(); if (LMap && t.dataset.tab !== 'map') { LMap.remove(); LMap = null; } S.tab = t.dataset.tab; if (S.tab === 'profile') { S.profileOf = null; S.profileTab = 'grid'; } $('#app').innerHTML = ''; render(); if (S.tab !== 'chat') window.scrollTo({ top:0 }); break;
     case 'create': openCreate('post'); break;
     case 'create-story': openCreate('story'); break;
     case 'cmode': C.mode = t.dataset.m; openCreate(C.mode, C.challenge); break;
@@ -1458,6 +1725,13 @@ document.addEventListener('click', async e => {
     case 'cclear': C.pr = null; updatePreview(); break;
     case 'publish': publish(); break;
     case 'like': setLike(id, 'toggle'); break;
+    case 'fav': toggleFav(id); break;
+    case 'repost': repostPost(id); break;
+    case 'share-post': sharePost(id); break;
+    case 'feed-menu': e.stopPropagation(); if ($('#popmenu')) closeFeedMenu(); else openFeedMenu(); break;
+    case 'feed-mode': S.feedMode = t.dataset.m; meta.set('feedMode', S.feedMode); closeFeedMenu(); render(); window.scrollTo({ top:0 }); break;
+    case 'reel-tap': { const now = Date.now(); if (taps[id] && now - taps[id] < 320) { taps[id] = 0; setLike(id, 'on'); t.play().catch(() => {}); } else { taps[id] = now; const v = t; if (v.paused) v.play().catch(() => {}); else v.pause(); } break; }
+    case 'reel-mute': reelMuted = !reelMuted; $$('.reel video').forEach(v => v.muted = reelMuted); $$('.rmute').forEach(b => b.innerHTML = reelMuted ? I.muted : I.sound); break;
     case 'media-tap': mediaTap(id, t); break;
     case 'comments': openComments(id); break;
     case 'post-menu': postMenu(id); break;
@@ -1492,11 +1766,13 @@ document.addEventListener('click', async e => {
     case 'alert-close': closeAlert(); break;
     case 'settings': openSettings(); break;
     case 'edit-profile': openProfileEdit(); break;
-    case 'e-emoji': E.emoji = t.dataset.e; E.removePhoto = true; E.avatarPr = null; if (E.avatarURL) { URL.revokeObjectURL(E.avatarURL); E.avatarURL = null; } $$('.emojis button').forEach(b => b.classList.toggle('on', b === t)); refreshEditAvatar(); break;
+    case 'e-emoji': E.emoji = t.dataset.e; E.removePhoto = true; E.avatarPr = null; if (E.avatarURL) { URL.revokeObjectURL(E.avatarURL); E.avatarURL = null; } $$('.emojis button').forEach(b => b.classList.toggle('on', b === t)); refreshEditAvatar(); if (S.tab === 'editprof') closeSheet(); break;
     case 'e-sound': E.sound = t.dataset.s; Sound.play(E.sound); $$('.sounds button').forEach(b => b.classList.toggle('on', b === t)); { const l = $('#esndl'); if (l) l.textContent = `${soundInfo(E.sound)[1]} ${soundInfo(E.sound)[2]} ›`; } break;
-    case 'e-pic': { const x = $('#epic'); x.style.display = x.style.display === 'none' ? 'block' : 'none'; break; }
+    case 'e-picmenu': openPicMenu(); break;
+    case 'e-back': leaveEditProf(); break;
+    case 'e-emojis': openSheet(`<h3 class="sh-title">Emoji als Profilbild</h3><div class="emojis">${EMOJIS.map(x => `<button data-act="e-emoji" data-e="${x}" class="${x === E.emoji ? 'on' : ''}">${x}</button>`).join('')}</div>`); break;
     case 'e-sounds': { const x = $('#esnd'); x.style.display = x.style.display === 'none' ? 'block' : 'none'; break; }
-    case 'e-nophoto': E.removePhoto = true; E.avatarPr = null; E.avatarURL = null; refreshEditAvatar(); break;
+    case 'e-nophoto': E.removePhoto = true; E.avatarPr = null; E.avatarURL = null; refreshEditAvatar(); if (S.tab === 'editprof') closeSheet(); break;
     case 'e-save': await saveProfileForm(); closeSheet(); render(); toast('Gespeichert'); break;
     case 'perm-push': try { await enablePush(); toast('Benachrichtigungen aktiv ✓'); } catch (err) { toast(err.message); } break;
     case 'perm-geo': { const p = await getPos(); toast(p ? `Standort ok ✓ (±${p.acc} m)` : 'Standort nicht erlaubt oder nicht gefunden'); break; }
@@ -1540,7 +1816,7 @@ document.addEventListener('change', async e => {
   if (e.target.id === 'cfile' || e.target.id === 'ccam') onPickFile(e.target);
   if (e.target.id === 'efile') {
     const f = e.target.files && e.target.files[0]; if (!f) return;
-    try { E.avatarPr = await processFile(f, 600); E.removePhoto = false; if (E.avatarURL) URL.revokeObjectURL(E.avatarURL); E.avatarURL = URL.createObjectURL(E.avatarPr.blob); refreshEditAvatar(); }
+    try { E.avatarPr = await processFile(f, 600); E.removePhoto = false; if (E.avatarURL) URL.revokeObjectURL(E.avatarURL); E.avatarURL = URL.createObjectURL(E.avatarPr.blob); refreshEditAvatar(); if (S.tab === 'editprof') closeSheet(); }
     catch (err) { toast(err.message); }
     e.target.value = '';
   }
@@ -1569,6 +1845,8 @@ async function boot(){
   for (const t of Object.keys(TABLES)) (await DB.entries(t)).forEach(([k, v]) => D[t].set(k, v));
   S.handled = new Set((await meta.get('handled')) || []);
   S.recapSeen = new Set((await meta.get('recapSeen')) || []);
+  S.feedMode = (await meta.get('feedMode')) || 'all';
+  S.actSeen = (await meta.get('actSeen')) || 0;
   const dev = await meta.get('device');
   const m = location.hash.match(/join=([a-f0-9]{16,})/i);
   if (dev && dev.user) {
