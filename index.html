@@ -484,6 +484,12 @@ body.dark-tab .tabbar .icon-btn.act{background:rgba(255,255,255,.15)}
 .ep-more .er::after{left:16px}
 .likes{margin:3px 0}
 .lav .av{display:inline-flex}
+/* Tab-Leiste: Knöpfe teilen sich die Breite, nichts ragt raus */
+.tabbar{width:calc(100% - 32px);padding:6px;gap:2px;overflow:hidden;box-sizing:border-box}
+.tabbar .icon-btn{flex:1 1 0;min-width:0;padding:10px 0;display:flex;align-items:center;justify-content:center}
+.tabbar .icon-btn .av{width:28px!important;height:28px!important;font-size:16px!important;flex:0 0 28px;outline:0}
+.tabbar .icon-btn.act .av{box-shadow:0 0 0 2px var(--fg)}
+.tabbar .dot{right:calc(50% - 22px)}
 </style>
 </head>
 <body>
@@ -500,7 +506,7 @@ const CONFIG = {
 };
 
 const APP_NAME = 'Unsergram';
-const APP_VERSION = '4.11.-4';
+const APP_VERSION = '4.11.-5';
 const USERS = {
   je:   { id:'je',   nick:'j from e', email:'je@ebbing-project.de', fixedNick:true,  emoji:'🙂', sound:'glocke' },
   anke: { id:'anke', nick:'Anke',     email:'',                     fixedNick:false, emoji:'🌻', sound:'kuh' }
