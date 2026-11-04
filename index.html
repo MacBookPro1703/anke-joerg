@@ -7,14 +7,14 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Anke &amp; Jörg">
+<meta name="apple-mobile-web-app-title" content="Unsergram">
 <meta name="robots" content="noindex, nofollow">
-<title>Anke &amp; Jörg</title>
+<title>Unsergram</title>
 <link rel="manifest" href="manifest.json">
-<link rel="icon" href="icon-192.png">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="icon-192.png?v=2">
+<link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Grand+Hotel&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <style>
 :root{
@@ -46,7 +46,7 @@ button{font:inherit;color:inherit}
 .topbar{position:sticky;top:0;z-index:20;background:var(--bg);display:flex;align-items:center;
   justify-content:space-between;gap:8px;padding:env(safe-area-inset-top) 10px 0 16px;
   height:calc(48px + env(safe-area-inset-top));border-bottom:1px solid var(--line)}
-.wordmark{font-family:'Caveat',cursive;font-size:31px;font-weight:700;line-height:1;white-space:nowrap}
+.wordmark{font-family:'Grand Hotel',cursive;font-size:30px;font-weight:400;line-height:1;white-space:nowrap}
 .topbar h1{font-size:17px;margin:0;font-weight:700}
 .icon-btn{background:none;border:0;padding:7px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center}
 .icon-btn svg{width:25px;height:25px}
@@ -306,12 +306,26 @@ label.fl{display:block;font-weight:600;margin:14px 0 6px}
 .rl small{color:var(--muted)}
 .vtitle{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 26px}
 .vtitle small{font-size:14px;letter-spacing:.5px;text-transform:uppercase;opacity:.85}
-.vtitle b{font-family:'Caveat',cursive;font-size:52px;line-height:1.05;margin:10px 0}
+.vtitle b{font-family:'Grand Hotel',cursive;font-size:50px;line-height:1.05;margin:10px 0}
 .vtitle span{font-size:16px;opacity:.9}
 .vpost-cap{position:absolute;left:0;right:0;bottom:0;padding:50px 18px calc(26px + env(safe-area-inset-bottom));
   background:linear-gradient(transparent,rgba(0,0,0,.65));z-index:3;pointer-events:none}
 .vpost-cap b{display:block;font-size:13px;opacity:.85;margin-bottom:3px}
 .vpost-cap p{margin:0;font-size:16px;white-space:pre-wrap}
+/* Profil wie gewohnt */
+.bio{margin:3px 0 2px;white-space:pre-wrap;font-size:14px}
+.plink{display:block;color:#00376b;font-weight:600;text-decoration:none;margin:2px 0;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .plink{color:#e0f1ff}}
+:root[data-theme="dark"] .plink{color:#e0f1ff}
+.ehead{display:flex;align-items:center;justify-content:space-between;padding:2px 0 10px;border-bottom:1px solid var(--line)}
+.ehead b{font-size:16px}
+.ehead .link{margin:0;font-size:15px}
+.erow{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--line)}
+.erow label{flex:0 0 92px;font-weight:600;padding-top:9px;font-size:14px;color:var(--fg);cursor:pointer}
+.erow > div{flex:1;min-width:0}
+.erow input,.erow textarea{background:none;border:0;border-radius:0;padding:8px 0;font-size:16px}
+.erow small{display:block}
+button.erow > div{padding-top:9px;font-size:15px}
 </style>
 </head>
 <body>
@@ -327,7 +341,7 @@ const CONFIG = {
   SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZyYmVuYXpwaml5amlpa2ZvenRjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM3MTUxMjEsImV4cCI6MjEwOTI5MTEyMX0.Ph1oVR416VBYRNpxO_6fOkoVmeYURj1Q4EAVo56G3GY'
 };
 
-const APP_NAME = 'Anke & Jörg';
+const APP_NAME = 'Unsergram';
 const USERS = {
   je:   { id:'je',   nick:'j from e', email:'je@ebbing-project.de', fixedNick:true,  emoji:'🙂', sound:'glocke' },
   anke: { id:'anke', nick:'Anke',     email:'',                     fixedNick:false, emoji:'🌻', sound:'kuh' }
@@ -756,6 +770,7 @@ function render(){
   else if (S.tab === 'search') h = searchHTML();
   else if (S.tab === 'activity') h = activityHTML();
   else if (S.tab === 'profile') h = profileHTML(S.profileOf || S.me);
+  else if (S.tab === 'ufeed') h = ufeedHTML(S.profileOf);
   app.innerHTML = h + tabbarHTML();
   hydrate(app); watchVideos();
   if (aid) { const n = document.getElementById(aid); if (n) { if (sel) { n.value = sel[2]; try { n.setSelectionRange(sel[0], sel[1]); } catch (_) {} } n.focus({ preventScroll:true }); } }
@@ -855,7 +870,7 @@ function challengeIdFromPost(p){ return p.challenge ? challengeFor(p.created_at)
 function chIdxById(id){ for (let w = weekStart(CH_START), i = 0; i < 520; i++, w = addDays(w, 7)) { const c = challengeFor(w); if (c.id === id) return c.idx; } return -1; }
 
 function tabbarHTML(){
-  const t = S.tab, own = t === 'profile' && (!S.profileOf || S.profileOf === S.me);
+  const t = S.tab, own = (t === 'profile' || t === 'ufeed') && (!S.profileOf || S.profileOf === S.me);
   return `<nav class="tabbar">
     <button class="icon-btn" data-act="tab" data-tab="home" aria-label="Home">${t === 'home' ? I.homeOn : I.home}</button>
     <button class="icon-btn" data-act="tab" data-tab="search" aria-label="Suche">${t === 'search' ? I.searchOn : I.search}</button>
@@ -864,9 +879,10 @@ function tabbarHTML(){
     <button class="icon-btn ${own ? 'on' : ''}" data-act="tab" data-tab="profile" aria-label="Profil">${avatar(S.me, 27)}</button>
   </nav>`;
 }
-function gridHTML(list){
+function safeLink(l){ l = (l || '').trim(); if (!l) return ''; if (!/^https?:\/\//i.test(l)) l = 'https://' + l; try { const u = new URL(l); return /^https?:$/.test(u.protocol) ? u.href : ''; } catch (_) { return ''; } }
+function gridHTML(list, ufeed){
   if (!list.length) return `<div class="empty">Hier ist noch nichts.</div>`;
-  return `<div class="grid">${list.map(p => `<button class="tile" data-act="open-post" data-id="${p.id}">${thumb(p)}${p.media_type === 'video' ? `<span class="badge">${I.video}</span>` : ''}</button>`).join('')}</div>`;
+  return `<div class="grid">${list.map(p => `<button class="tile" data-act="${ufeed ? 'ufeed' : 'open-post'}" data-u="${p.author}" data-id="${p.id}">${thumb(p)}${p.media_type === 'video' ? `<span class="badge">${I.video}</span>` : ''}</button>`).join('')}</div>`;
 }
 function searchHTML(){
   return `<div class="searchbar"><input type="text" id="q" placeholder="Momente durchsuchen" value="${esc(S.q)}" autocomplete="off" enterkeyhint="search"></div>
@@ -919,16 +935,23 @@ function profileHTML(r){
         ${w.length > 1 ? `<button class="rl" data-act="story-of-us"><div class="rt"><div class="tp" style="background:${GRADS[3]};font-size:22px">📖</div></div><div><b>Unsere Geschichte</b><small>Alle Wochen am Stück – wird jede Woche länger</small></div></button>` : ''}
         ${m.map(row).join('')}${w.map(row).join('')}</div>`
       : `<div class="empty">Der erste Wochen-Rückblick erscheint automatisch am Montag – mit den schönsten Momenten der Woche.</div>`;
-  } else body = gridHTML(ps);
+  } else body = ps.length ? gridHTML(ps, r) : `<div class="empty"><div class="big">📷</div><b>Noch keine Beiträge</b>${own ? 'Teile deinen ersten Moment.' : esc(nick(r)) + ' hat noch nichts geteilt.'}</div>`;
   return `<header class="topbar">${head}</header>
-    <section class="prof">${avatar(r, 86)}
+    <section class="prof">${storiesOf(r, true).length ? `<button class="story" style="width:auto" data-act="story-user" data-u="${r}"><div class="ring ${r !== S.me && storiesOf(r, true).every(s => viewersOf(s.id).includes(S.me)) ? 'seen' : ''}" style="width:92px;height:92px">${ringAvatar(r)}</div></button>` : avatar(r, 86)}
       <div class="stats"><div><b>${ps.length}</b><span>Beiträge</span></div><div><b>${st.length}</b><span>Stories</span></div><div><b>${week}</b><span>diese Woche</span></div></div></section>
-    <div class="pname"><b>${esc(nick(r))}</b>${USERS[r].email ? `<span class="muted">${esc(USERS[r].email)}</span>` : ''}<br><span class="muted">Lieblingston: ${soundInfo(prof(r).sound)[1]} ${soundInfo(prof(r).sound)[2]}</span></div>
+    <div class="pname"><b>${esc(nick(r))}</b>${prof(r).bio ? `<p class="bio">${esc(prof(r).bio)}</p>` : ''}${safeLink(prof(r).link) ? `<a class="plink" href="${esc(safeLink(prof(r).link))}" target="_blank" rel="noopener">🔗 ${esc(safeLink(prof(r).link).replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, ''))}</a>` : ''}<span class="muted">Lieblingston: ${soundInfo(prof(r).sound)[1]} ${soundInfo(prof(r).sound)[2]}</span></div>
     ${own ? `<div class="pact"><button class="btn" data-act="edit-profile">Profil bearbeiten</button><button class="btn" data-act="create-story">Story hinzufügen</button></div>` : `<div class="pact"><button class="btn" data-act="tab" data-tab="chat">Nachricht</button></div>`}
     <div class="ptabs"><button class="${S.profileTab === 'grid' ? 'on' : ''}" data-act="ptab" data-t="grid" aria-label="Beiträge">${I.grid}</button>
       <button class="${S.profileTab === 'archive' ? 'on' : ''}" data-act="ptab" data-t="archive" aria-label="Story-Archiv">${I.archive}</button>
       <button class="${S.profileTab === 'recaps' ? 'on' : ''}" data-act="ptab" data-t="recaps" aria-label="Rückblicke">${I.book}</button></div>
     ${body}`;
+}
+
+function ufeedHTML(r){
+  const ps = posts().filter(p => p.author === r);
+  return `<header class="topbar" style="justify-content:flex-start;gap:6px"><button class="icon-btn" data-act="profile" data-u="${r}" aria-label="Zurück">${I.back}</button>
+    <div style="line-height:1.15"><small class="muted" style="font-size:12px;font-weight:600">${esc(nick(r))}</small><h1 style="font-size:16px">Beiträge</h1></div></header>
+    <main class="feed">${ps.map(postHTML).join('')}</main>`;
 }
 
 /* ---------- Chat ---------- */
@@ -937,7 +960,7 @@ function renderChat(){
   if (!$('#clog')) {
     const o = other();
     app.innerHTML = `<div class="chat"><header class="topbar"><button class="icon-btn" data-act="tab" data-tab="home" aria-label="Zurück">${I.back}</button>
-      ${avatar(o, 32)}<h1>${esc(nick(o))}</h1></header><div class="clog" id="clog"></div>
+      <button class="who" style="background:none;border:0;padding:0;display:flex;align-items:center;gap:10px;cursor:pointer" data-act="profile" data-u="${o}">${avatar(o, 32)}<h1>${esc(nick(o))}</h1></button></header><div class="clog" id="clog"></div>
       <form class="cbar" id="cbar"><button class="icon-btn" type="button" data-act="sound-sheet" aria-label="Sound schicken">${I.bell}</button>
       <input type="text" id="cmsg" placeholder="Nachricht …" autocomplete="off" enterkeyhint="send" maxlength="2000">
       <button class="link strong" type="submit">Senden</button></form></div>`;
@@ -1250,13 +1273,30 @@ async function saveProfileForm(){
   const r = E.role, p = { ...prof(r), role:r };
   if (!USERS[r].fixedNick) { const n = ($('#enick') && $('#enick').value || '').trim(); p.nick = n || USERS[r].nick; } else p.nick = USERS[r].nick;
   p.emoji = E.emoji; p.sound = E.sound; p.updated_at = Date.now();
+  if ($('#ebio')) p.bio = $('#ebio').value.trim().slice(0, 150);
+  if ($('#elink')) p.link = $('#elink').value.trim().slice(0, 200);
   if (E.avatarPr) p.avatar_path = await storeMedia(E.avatarPr);
   else if (E.removePhoto) p.avatar_path = null;
   await put('profiles', p);
   if (E.avatarURL) { URL.revokeObjectURL(E.avatarURL); E.avatarURL = null; }
 }
 function openProfileEdit(){
-  openSheet(`<h3 class="sh-title">Profil bearbeiten</h3>${profileFormHTML(S.me)}<button class="btn primary" style="margin-top:16px" data-act="e-save">Speichern</button>`, 'tall');
+  const r = S.me, p = prof(r), fixed = USERS[r].fixedNick;
+  E.role = r; E.emoji = p.emoji || USERS[r].emoji; E.sound = p.sound || USERS[r].sound; E.avatarPr = null; E.removePhoto = false;
+  if (E.avatarURL) { URL.revokeObjectURL(E.avatarURL); E.avatarURL = null; }
+  openSheet(`<div class="ehead"><button class="link" data-act="close-sheet">Abbrechen</button><b>Profil bearbeiten</b><button class="link strong" data-act="e-save">Fertig</button></div>
+    <div style="display:flex;justify-content:center;margin:14px 0 6px" id="eav">${avatar(r, 86)}</div>
+    <button class="link strong" style="margin:0 auto 6px;display:block" data-act="e-pic">Bild bearbeiten</button>
+    <div id="epic" style="display:none;margin:4px 0 12px">
+      <div class="pick"><label class="btn">Foto wählen<input type="file" id="efile" accept="image/*" hidden></label>${p.avatar_path ? '<button class="btn" data-act="e-nophoto">Foto entfernen</button>' : ''}</div>
+      <div class="emojis">${EMOJIS.map(e => `<button data-act="e-emoji" data-e="${e}" class="${e === E.emoji ? 'on' : ''}">${e}</button>`).join('')}</div>
+    </div>
+    <div class="erow"><label for="enick">Name</label><div><input type="text" id="enick" value="${esc(nick(r))}" maxlength="24" ${fixed ? 'readonly' : ''} autocomplete="off">${fixed ? '<small class="fine">Fest eingestellt</small>' : ''}</div></div>
+    <div class="erow"><label for="ebio">Bio</label><div><textarea id="ebio" rows="3" maxlength="150" placeholder="Ein paar Worte über dich">${esc(p.bio || '')}</textarea><small class="fine" id="ebioc">${(p.bio || '').length}/150</small></div></div>
+    <div class="erow"><label for="elink">Link</label><div><input type="text" id="elink" value="${esc(p.link || '')}" maxlength="200" placeholder="z. B. Lieblingslied oder Website" autocomplete="off" inputmode="url"></div></div>
+    <button class="erow" data-act="e-sounds" style="width:100%;background:none;border:0;border-bottom:1px solid var(--line);text-align:left;cursor:pointer"><label>Lieblingston</label><div id="esndl">${soundInfo(E.sound)[1]} ${soundInfo(E.sound)[2]} ›</div></button>
+    <div id="esnd" style="display:none;margin-top:10px"><div class="sounds">${SOUND_LIST.filter(s => s[0] !== 'alarm').map(s => `<button data-act="e-sound" data-s="${s[0]}" class="${s[0] === E.sound ? 'on' : ''}"><span>${s[1]}</span><small>${s[2]}</small></button>`).join('')}</div></div>
+    <div class="menu" style="margin-top:18px"><button class="btn" data-act="settings">Einstellungen & Einladung</button></div>`, 'tall');
 }
 
 /* ---------- Einstellungen ---------- */
@@ -1276,7 +1316,7 @@ async function openSettings(){
     <p class="fine" style="text-align:center;margin-top:12px">${esc(syncLine())}${pend ? ` · ${pend} Änderung(en) warten` : ''}</p>`, 'tall');
 }
 function openInvite(){
-  const u = inviteURL(), txt = `Hier ist unsere App 💛 Öffne den Link in Safari, dort steht, wie es weitergeht: ${u}`;
+  const u = inviteURL(), txt = `Hier ist unser Unsergram 💛 Öffne den Link in Safari, dort steht, wie es weitergeht: ${u}`;
   openSheet(`<h3 class="sh-title">Einladung für ${esc(nick(other()))}</h3>
     <p class="muted" style="margin:0 0 6px">Dieser Link ist der Schlüssel. Kein Passwort, kein Konto. Nur an ${esc(nick(other()))} schicken.</p>
     <div class="linkbox">${esc(u)}</div>
@@ -1356,7 +1396,7 @@ function onbHTML(){
         <div class="grow"></div>${dots}${next()}</div>`;
     case 'invite': return `<div class="step"><div class="ico">💌</div><h2>Jetzt ${esc(nick(other()))} einladen</h2>
         <p>Schick diesen Link. Er ist der Schlüssel – kein Passwort, kein Konto.</p><div class="linkbox">${esc(inviteURL())}</div>
-        <a class="btn primary" style="text-decoration:none" href="https://wa.me/?text=${encodeURIComponent('Hier ist unsere App 💛 Öffne den Link in Safari, dort steht, wie es weitergeht: ' + inviteURL())}" target="_blank" rel="noopener">Per WhatsApp schicken</a>
+        <a class="btn primary" style="text-decoration:none" href="https://wa.me/?text=${encodeURIComponent('Hier ist unser Unsergram 💛 Öffne den Link in Safari, dort steht, wie es weitergeht: ' + inviteURL())}" target="_blank" rel="noopener">Per WhatsApp schicken</a>
         <button class="btn" data-act="share-invite">Teilen …</button><button class="btn" data-act="copy-invite">Link kopieren</button>
         <div class="grow"></div>${dots}${next('Fertig')}</div>`;
   }
@@ -1378,7 +1418,7 @@ async function onbProfile(){
   try {
     if (Sync.configured) {
       await Sync.ensureAuth();
-      const r = S.onb.mode === 'join'
+      const r = S.onb.joined ? { data:S.onb.joined } : S.onb.mode === 'join'
         ? await Sync.sb.rpc('join_space', { p_secret:S.onb.secret, p_role:S.onb.role })
         : await Sync.sb.rpc('create_space', { p_role:S.onb.role });
       if (r.error) throw r.error;
@@ -1426,10 +1466,11 @@ document.addEventListener('click', async e => {
     case 'del-post': delPost(id); break;
     case 'close-sheet': closeSheet(); break;
     case 'open-post': openSinglePost(id); break;
-    case 'profile': closeSheet(); S.tab = 'profile'; S.profileOf = u; S.profileTab = 'grid'; render(); window.scrollTo({ top:0 }); break;
+    case 'profile': closeSheet(); S.tab = 'profile'; S.profileOf = u; S.profileTab = 'grid'; $('#app').innerHTML = ''; render(); window.scrollTo({ top:0 }); break;
     case 'ptab': S.profileTab = t.dataset.t; render(); break;
     case 'story-user': { const list = storiesOf(u, true); const f = list.findIndex(s => u !== S.me && !viewersOf(s.id).includes(S.me)); openViewer(list.map(s => ({ type:'story', s })), f < 0 ? 0 : f); break; }
-    case 'no-story': toast(`${nick(u)} hat heute noch keine Story geteilt.`); break;
+    case 'no-story': closeSheet(); S.tab = 'profile'; S.profileOf = u; S.profileTab = 'grid'; $('#app').innerHTML = ''; render(); window.scrollTo({ top:0 }); break;
+    case 'ufeed': closeSheet(); S.tab = 'ufeed'; S.profileOf = u; render(); { const el = document.getElementById('p-' + id); if (el) el.scrollIntoView(); } break;
     case 'archive-open': { const list = storiesOf(u); openViewer(list.map(s => ({ type:'story', s })), list.findIndex(s => s.id === id)); break; }
     case 'recap': { const rc = [...weeklyRecaps(), ...monthlyRecaps()].find(r => r.id === id); if (rc) openViewer(recapItems(rc), 0); break; }
     case 'story-of-us': openViewer(storyOfUs(), 0); break;
@@ -1452,14 +1493,16 @@ document.addEventListener('click', async e => {
     case 'settings': openSettings(); break;
     case 'edit-profile': openProfileEdit(); break;
     case 'e-emoji': E.emoji = t.dataset.e; E.removePhoto = true; E.avatarPr = null; if (E.avatarURL) { URL.revokeObjectURL(E.avatarURL); E.avatarURL = null; } $$('.emojis button').forEach(b => b.classList.toggle('on', b === t)); refreshEditAvatar(); break;
-    case 'e-sound': E.sound = t.dataset.s; Sound.play(E.sound); $$('.sounds button').forEach(b => b.classList.toggle('on', b === t)); break;
+    case 'e-sound': E.sound = t.dataset.s; Sound.play(E.sound); $$('.sounds button').forEach(b => b.classList.toggle('on', b === t)); { const l = $('#esndl'); if (l) l.textContent = `${soundInfo(E.sound)[1]} ${soundInfo(E.sound)[2]} ›`; } break;
+    case 'e-pic': { const x = $('#epic'); x.style.display = x.style.display === 'none' ? 'block' : 'none'; break; }
+    case 'e-sounds': { const x = $('#esnd'); x.style.display = x.style.display === 'none' ? 'block' : 'none'; break; }
     case 'e-nophoto': E.removePhoto = true; E.avatarPr = null; E.avatarURL = null; refreshEditAvatar(); break;
     case 'e-save': await saveProfileForm(); closeSheet(); render(); toast('Gespeichert'); break;
     case 'perm-push': try { await enablePush(); toast('Benachrichtigungen aktiv ✓'); } catch (err) { toast(err.message); } break;
     case 'perm-geo': { const p = await getPos(); toast(p ? `Standort ok ✓ (±${p.acc} m)` : 'Standort nicht erlaubt oder nicht gefunden'); break; }
     case 'invite': openInvite(); break;
     case 'howto': openHowto(); break;
-    case 'share-invite': try { await navigator.share({ title:APP_NAME, text:'Hier ist unsere App 💛 Der Link ist dein Schlüssel:', url:inviteURL() }); } catch (_) { copyText(inviteURL()); } break;
+    case 'share-invite': try { await navigator.share({ title:APP_NAME, text:'Hier ist unser Unsergram 💛 Der Link ist dein Schlüssel:', url:inviteURL() }); } catch (_) { copyText(inviteURL()); } break;
     case 'copy-invite': copyText(inviteURL()); break;
     case 'switch-user': S.me = other(); await meta.set('device', { user:S.me, spaceId:S.spaceId, secret:S.secret }); closeSheet(); S.tab = 'home'; render(); toast(`Ansicht: ${nick(S.me)}`); break;
     case 'onb-next': onbNext(); break;
@@ -1474,7 +1517,20 @@ document.addEventListener('click', async e => {
       if (!mm) { toast('Das sieht nicht nach einer Einladung aus'); break; }
       S.onb.mode = 'join'; S.onb.secret = mm[1]; S.onb.step = 'who'; render(); window.scrollTo(0, 0); break;
     }
-    case 'onb-who': S.onb.role = u; S.onb.step = 'profile'; render(); window.scrollTo(0, 0); break;
+    case 'onb-who': {
+      S.onb.role = u;
+      if (S.onb.mode === 'join' && Sync.configured) {
+        $$('[data-act=onb-who]').forEach(b => b.disabled = true); t.textContent = 'Verbinde …';
+        try {
+          await Sync.ensureAuth();
+          const r = await Sync.sb.rpc('join_space', { p_secret:S.onb.secret, p_role:u }); if (r.error) throw r.error;
+          S.onb.joined = r.data;
+          const pr = await Sync.sb.from('profiles').select('*').eq('space_id', r.data.space_id);
+          (pr.data || []).forEach(row => { D.profiles.set(row.role, row); DB.put('profiles', row, row.role); });
+        } catch (err) { toast(err.message || 'Verbindung fehlgeschlagen'); S.onb.joined = null; render(); break; }
+      }
+      S.onb.step = 'profile'; render(); window.scrollTo(0, 0); break;
+    }
     case 'onb-profile': onbProfile(); break;
     case 'onb-push': try { await enablePush(); const p = $('#pushst'); if (p) p.innerHTML = '<span class="ok">✓ Benachrichtigungen aktiv</span>'; setTimeout(onbNext, 700); } catch (err) { const p = $('#pushst'); if (p) p.textContent = err.message; } break;
     case 'onb-geo': { const p = await getPos(); const st = $('#geost'); if (st) st.innerHTML = p ? '<span class="ok">✓ Standort erlaubt</span>' : 'Nicht erlaubt – geht auch später.'; setTimeout(onbNext, 700); break; }
@@ -1491,6 +1547,7 @@ document.addEventListener('change', async e => {
 });
 document.addEventListener('input', e => {
   if (e.target.id === 'ctext') updatePreview();
+  if (e.target.id === 'ebio') { const c = $('#ebioc'); if (c) c.textContent = e.target.value.length + '/150'; }
   if (e.target.id === 'q') { S.q = e.target.value; const r = $('#sres'); if (r) { r.innerHTML = gridHTML(searchPosts()); hydrate(r); } }
 });
 document.addEventListener('submit', e => {
