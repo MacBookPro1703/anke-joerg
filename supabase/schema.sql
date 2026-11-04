@@ -60,7 +60,7 @@ $$;
 create table if not exists public.profiles (
   space_id uuid not null references public.spaces(id) on delete cascade,
   role text not null check (role in ('je','anke')),
-  nick text, emoji text, avatar_path text, sound text, bio text, link text,
+  nick text, emoji text, avatar_path text, sound text, bio text, link text, pronouns text,
   updated_at bigint,
   primary key (space_id, role)
 );
@@ -118,6 +118,7 @@ create table if not exists public.push_subs (
 );
 alter table public.profiles add column if not exists bio text;
 alter table public.profiles add column if not exists link text;
+alter table public.profiles add column if not exists pronouns text;
 
 -- Nur für die Edge Function (Service-Rolle), keine Policies = für Apps unsichtbar
 create table if not exists public.app_keys (

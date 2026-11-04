@@ -407,6 +407,83 @@ body.dark-tab .tabbar .icon-btn{color:#fff}
 .prof{gap:14px}
 .stats span{font-size:12.5px;white-space:nowrap}
 .stats > div{min-width:0;padding:0 2px}
+/* ===== Optik nach Jörgs Screenshots (04.11.) ===== */
+.hometop{display:grid;grid-template-columns:48px 1fr 48px;align-items:center;padding:env(safe-area-inset-top) 4px 0;border-bottom:0;height:calc(54px + env(safe-area-inset-top))}
+.hometop .feedsel{justify-content:center;justify-self:center;padding:4px 8px}
+.hometop .wordmark{font-size:32px}
+.feedsel .fm{font-size:24px;font-weight:800;letter-spacing:-.3px;gap:4px}
+.feedsel .fm svg{width:18px;height:18px;stroke-width:2.6}
+.plusbtn svg{width:30px;height:30px}
+.hometop .hbtn svg{width:28px;height:28px}
+.hometop .dot.sm{top:5px;right:5px;width:10px;height:10px;min-width:10px}
+.popmenu{left:50%;transform:translateX(-50%)}
+/* Story-Kreise größer */
+.stories{gap:16px;padding:8px 14px 12px}
+.story{width:84px}
+.ring{width:84px;height:84px;padding:3px}
+.ring.seen{padding:2px}
+.ring.none{padding:3px}
+.ring .av{border-width:3px}
+.story small{font-size:13px}
+.plus{width:28px;height:28px;background:#262626;color:#fff;border:3px solid var(--bg);right:-2px;bottom:-2px}
+.plus svg{width:15px;height:15px;stroke-width:3}
+/* Beitragskopf */
+.ph{padding:10px 4px 10px 12px;gap:10px}
+.phn{display:flex;flex-direction:column;line-height:1.2;cursor:pointer;min-width:0}
+.phn b{font-size:15px}
+.phn small{font-size:13px;color:var(--fg);opacity:.8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ph .more svg{width:28px;height:28px}
+/* Aktionsleiste */
+.pa{padding:6px 8px 2px 6px;gap:6px}
+.pa .icon-btn svg{width:26px;height:26px}
+.pa .cnt{font-size:15px;font-weight:600;margin-left:4px}
+.likes{font-weight:400!important}
+.likes .lav{vertical-align:middle;margin-right:6px}
+.lav{display:inline-flex!important;align-items:center}
+.lav .av{border:1.5px solid var(--bg);margin-right:-7px;font-size:11px!important}
+.lav .av:last-child{margin-right:2px}
+.time{text-transform:none!important;font-size:13px!important;letter-spacing:0!important}
+/* Schwebende Leiste unten */
+#app{padding-bottom:calc(92px + env(safe-area-inset-bottom))}
+.tabbar{bottom:calc(10px + env(safe-area-inset-bottom));width:calc(100% - 40px);max-width:430px;border-radius:40px;padding:6px 8px;
+  background:rgba(255,255,255,.72);-webkit-backdrop-filter:blur(18px) saturate(1.6);backdrop-filter:blur(18px) saturate(1.6);
+  border:1px solid rgba(0,0,0,.06);box-shadow:0 6px 24px rgba(0,0,0,.14);justify-content:space-between}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .tabbar{background:rgba(30,30,30,.72);border-color:rgba(255,255,255,.08)}}
+:root[data-theme="dark"] .tabbar{background:rgba(30,30,30,.72);border-color:rgba(255,255,255,.08)}
+.tabbar .icon-btn{padding:10px 16px;border-radius:30px;position:relative}
+.tabbar .icon-btn svg{width:27px;height:27px}
+.tabbar .icon-btn.act{background:rgba(0,0,0,.08)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .tabbar .icon-btn.act{background:rgba(255,255,255,.12)}}
+.tabbar .dot{top:4px;right:8px}
+body.dark-tab .tabbar{background:rgba(20,20,20,.7);border-color:rgba(255,255,255,.1)}
+body.dark-tab .tabbar .icon-btn.act{background:rgba(255,255,255,.15)}
+.reels,.reel{height:100dvh}
+.rside{bottom:120px}
+.rcap{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
+/* Profil bearbeiten wie Original */
+.ep-top{position:sticky;top:0;z-index:5;background:var(--bg);display:grid;grid-template-columns:56px 1fr 56px;align-items:center;padding:calc(6px + env(safe-area-inset-top)) 8px 8px;border-bottom:1px solid var(--line)}
+.ep-top h1{text-align:center;font-size:18px;margin:0}
+.ep-back{width:44px;height:44px;border-radius:50%;background:var(--bg);box-shadow:0 2px 10px rgba(0,0,0,.12)}
+.ep-pic{display:flex;flex-direction:row!important;justify-content:center;align-items:center;gap:18px;padding:22px 0 10px}
+.ep-c{width:96px;height:96px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;border:1px solid var(--line);background:var(--soft)}
+.ep-c img{width:100%;height:100%;object-fit:cover}
+.ep-photo svg{width:96px;height:96px;color:#8e8e8e;stroke-width:1.2}
+.ep-emoji{background:var(--bg);font-size:50px}
+.ep-edit{display:block;margin:4px auto 16px;background:none;border:0;color:#3f51f5;font-weight:700;font-size:16px;cursor:pointer}
+.ep-rows{border-top:1px solid var(--line)}
+.er{display:flex;align-items:center;gap:12px;padding:0 16px;min-height:56px;cursor:text;position:relative}
+.er::after{content:'';position:absolute;left:128px;right:16px;bottom:0;border-bottom:1px solid var(--line)}
+.er > span{flex:0 0 100px;font-size:16px;font-weight:500}
+.er > span.wide{flex:1}
+.er input,.er textarea{flex:1;border:0;background:none;border-radius:0;padding:16px 0;font-size:16px;color:var(--fg);outline:none;resize:none;min-width:0}
+.er input[readonly]{color:var(--fg)}
+.erb{width:100%;background:none;border:0;text-align:left;cursor:pointer;font:inherit;color:inherit}
+.erb em{flex:1;font-style:normal;font-size:16px}
+.erb svg{width:20px;height:20px;transform:rotate(-90deg);color:var(--muted);flex:0 0 auto}
+.ep-more{margin-top:22px}
+.ep-more .er::after{left:16px}
+.likes{margin:3px 0}
+.lav .av{display:inline-flex}
 </style>
 </head>
 <body>
@@ -423,7 +500,7 @@ const CONFIG = {
 };
 
 const APP_NAME = 'Unsergram';
-const APP_VERSION = '4.11.-3';
+const APP_VERSION = '4.11.-4';
 const USERS = {
   je:   { id:'je',   nick:'j from e', email:'je@ebbing-project.de', fixedNick:true,  emoji:'🙂', sound:'glocke' },
   anke: { id:'anke', nick:'Anke',     email:'',                     fixedNick:false, emoji:'🌻', sound:'kuh' }
@@ -524,6 +601,9 @@ const I = {
   back:     sv('<path d="M15 5l-7 7 7 7"/>'),
   gear:     sv('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>'),
   plusPlain:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 4v16M4 12h16"/></svg>`,
+  burger:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 9h16M8 15h12"/></svg>`,
+  person:   sv('<circle cx="12" cy="12" r="9.5"/><circle cx="12" cy="10" r="3.3"/><path d="M5.8 18.6a7.5 7.5 0 0 1 12.4 0"/>'),
+  sendOn:   sv('<path d="M21.5 3 3 10.2l7.2 3.1L21.5 3zM10.2 13.3l3.1 7.2L21.5 3"/>', true),
   reels:    sv('<rect x="3" y="3" width="18" height="18" rx="5"/><path d="M3 8.5h18M8 3l3 5.5M14 3l3 5.5"/><path d="M10 12v6l5-3z" fill="currentColor" stroke="none"/>'),
   reelsOn:  `<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5" fill="currentColor"/><path d="M3 8.5h18M8 3l3 5.5M14 3l3 5.5" stroke="var(--bg)" stroke-width="1.9" fill="none"/><path d="M10 12v6l5-3z" fill="var(--bg)"/></svg>`,
   pin:      sv('<path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.6"/>'),
@@ -900,9 +980,9 @@ function homeHTML(){
   else if (mode === 'fav') empty = `<div class="empty"><div class="big">🔖</div><b>Noch keine Favoriten</b>Tipp bei einem Beitrag unten rechts auf das Lesezeichen – dann landet er hier.</div>`;
   else empty = emptyFeedHTML();
   return `<header class="topbar hometop">
-      <div class="hl"><button class="icon-btn plusbtn" data-act="create" aria-label="Erstellen">${I.plusPlain}</button>
-      <button class="feedsel" data-act="feed-menu" aria-label="Feed wählen">${S.logoDone ? feedLabel() : `<span class="wordmark">${esc(APP_NAME)}</span>`}</button></div>
-      <div class="hr"><button class="icon-btn hbtn" data-act="tab" data-tab="chat" aria-label="Chat">${I.chat}${u ? `<span class="dot">${u}</span>` : ''}</button></div>
+      <button class="icon-btn plusbtn" data-act="create" aria-label="Erstellen">${I.plusPlain}</button>
+      <button class="feedsel" data-act="feed-menu" aria-label="Feed wählen">${S.logoDone ? feedLabel() : `<span class="wordmark">${esc(APP_NAME)}</span>`}</button>
+      <button class="icon-btn hbtn" data-act="tab" data-tab="activity" aria-label="Aktivität">${I.heart}${newAct ? '<span class="dot sm"></span>' : ''}</button>
     </header>
     ${mode === 'all' ? storiesBarHTML() + quickHTML() + challengeCardHTML() : ''}
     <main class="feed">${list.length ? list.map(postHTML).join('') : empty}</main>
@@ -1034,7 +1114,7 @@ function storiesBarHTML(){
   const me = S.me, o = other(), mine = storiesOf(me, true), theirs = storiesOf(o, true);
   let h = `<div class="stories">
     <button class="story" data-act="${mine.length ? 'story-user' : 'create-story'}" data-u="${me}">
-      <div class="ring ${mine.length ? '' : 'none'}">${ringAvatar(me)}${mine.length ? '' : '<span class="plus">+</span>'}</div><small>Deine Story</small></button>`;
+      <div class="ring ${mine.length ? '' : 'none'}">${ringAvatar(me)}${mine.length ? '' : `<span class="plus">${I.plusPlain}</span>`}</div><small>Deine Story</small></button>`;
   if (theirs.length) {
     const seen = theirs.every(s => viewersOf(s.id).includes(me));
     h += `<button class="story" data-act="story-user" data-u="${o}"><div class="ring ${seen ? 'seen' : ''}">${ringAvatar(o)}</div><small>${esc(nick(o))}</small></button>`;
@@ -1071,20 +1151,18 @@ function postHTML(p){
   cm += cms.slice(-2).map(c => `<p><b>${esc(nick(c.author))}</b> ${esc(c.text)}</p>`).join('');
   cm += `<button class="link" data-act="comments" data-id="${p.id}">Kommentar hinzufügen …</button>`;
   return `<article class="post" id="p-${p.id}">
-    <header class="ph"><button class="who" data-act="profile" data-u="${p.author}">${avatar(p.author, 32)}</button>
-      <b data-act="profile" data-u="${p.author}">${esc(nick(p.author))}</b>
-      <button class="icon-btn more" data-act="post-menu" data-id="${p.id}" aria-label="Mehr">${I.more}</button></header>
+    <header class="ph"><button class="who" data-act="profile" data-u="${p.author}">${avatar(p.author, 38)}</button>
+      <div class="phn" data-act="profile" data-u="${p.author}"><b>${esc(nick(p.author))}</b><small>${ch ? '🎯 ' + esc(ch) : (p.author === S.me ? 'Dein Moment' : 'Für dich')}</small></div>
+      <button class="icon-btn more" data-act="post-menu" data-id="${p.id}" aria-label="Mehr">${I.burger}</button></header>
     ${media}
     <div class="pa">
       <button class="icon-btn like ${liked ? 'on' : ''}" data-act="like" data-id="${p.id}" aria-label="Gefällt mir">${liked ? I.heartOn : I.heart}${likes.length ? `<span class="cnt">${likes.length}</span>` : ''}</button>
       <button class="icon-btn" data-act="comments" data-id="${p.id}" aria-label="Kommentieren">${I.comment}${cms.length ? `<span class="cnt">${cms.length}</span>` : ''}</button>
       <button class="icon-btn ${marks(p.id, 'repost').some(r => r.role.startsWith(S.me)) ? 'rp-on' : ''}" data-act="repost" data-id="${p.id}" aria-label="In Story reposten">${I.repost}${marks(p.id, 'repost').length ? `<span class="cnt">${marks(p.id, 'repost').length}</span>` : ''}</button>
       <button class="icon-btn" data-act="share-post" data-id="${p.id}" aria-label="Senden">${I.send}${marks(p.id, 'share').length ? `<span class="cnt">${marks(p.id, 'share').length}</span>` : ''}</button>
-      <span class="views" title="Aufrufe">${I.play}<span class="cnt">${marks(p.id, 'view').length}</span></span>
       <button class="icon-btn" style="margin-left:auto" data-act="fav" data-id="${p.id}" aria-label="Zu Favoriten">${isFav(p.id) ? I.saveOn : I.save}</button></div>
-    <div class="pb">${likers.length ? `<p class="likes">Gefällt ${likers.join(' und ')}</p>` : ''}
-      ${ch ? `<span class="tag-ch">🎯 ${esc(ch)}</span>` : ''}
-      ${p.media_path && p.text ? `<p><b>${esc(nick(p.author))}</b> ${esc(p.text)}</p>` : ''}${cm}<p class="time">${ago(p.created_at)}</p></div>
+    <div class="pb">${likers.length ? `<div class="likes"><span class="lav">${likes.slice(0, 2).map(l => avatar(l.role, 20).replace(/<div/g, '<span').replace(/<\/div>/g, '</span>')).join('')}</span>Gefällt <b>${likers.join('</b> und <b>')}</b></div>` : ''}
+      ${p.media_path && p.text ? `<p><b>${esc(nick(p.author))}</b> ${esc(p.text)}</p>` : ''}${cm}<p class="time">${ago(p.created_at)}${p.author === S.me && marks(p.id, 'view').length ? ` · Gesehen von ${esc(nick(other()))}` : ''}</p></div>
   </article>`;
 }
 function challengeIdFromPost(p){ return p.challenge ? challengeFor(p.created_at).id === p.challenge ? challengeFor(p.created_at).idx : chIdxById(p.challenge) : -1; }
@@ -1092,12 +1170,14 @@ function chIdxById(id){ for (let w = weekStart(CH_START), i = 0; i < 520; i++, w
 
 function tabbarHTML(){
   const t = S.tab, own = (t === 'profile' || t === 'ufeed') && (!S.profileOf || S.profileOf === S.me);
+  const u = unread(), pa = prof(S.me).avatar_path;
+  const b = (tab, on, icon, label, extra='') => `<button class="icon-btn ${on ? 'act' : ''}" data-act="tab" data-tab="${tab}" aria-label="${label}">${icon}${extra}</button>`;
   return `<nav class="tabbar">
-    <button class="icon-btn" data-act="tab" data-tab="home" aria-label="Home">${t === 'home' ? I.homeOn : I.home}</button>
-    <button class="icon-btn" data-act="tab" data-tab="reels" aria-label="Reels">${t === 'reels' ? I.reelsOn : I.reels}</button>
-    <button class="icon-btn" data-act="tab" data-tab="map" aria-label="Karte">${t === 'map' ? I.pinOn : I.pin}</button>
-    <button class="icon-btn" data-act="tab" data-tab="search" aria-label="Suche">${t === 'search' ? I.searchOn : I.search}</button>
-    <button class="icon-btn ${own ? 'on' : ''}" data-act="tab" data-tab="profile" aria-label="Profil">${avatar(S.me, 27)}</button>
+    ${b('home', t === 'home', t === 'home' ? I.homeOn : I.home, 'Home')}
+    ${b('reels', t === 'reels', t === 'reels' ? I.reelsOn : I.reels, 'Reels')}
+    ${b('chat', t === 'chat', I.send, 'Nachrichten', u ? `<span class="dot">${u}</span>` : '')}
+    ${b('search', t === 'search', t === 'search' ? I.searchOn : I.search, 'Suche')}
+    ${b('profile', own, pa ? avatar(S.me, 26) : I.person, 'Profil')}
   </nav>`;
 }
 function safeLink(l){ l = (l || '').trim(); if (!l) return ''; if (!/^https?:\/\//i.test(l)) l = 'https://' + l; try { const u = new URL(l); return /^https?:$/.test(u.protocol) ? u.href : ''; } catch (_) { return ''; } }
@@ -1160,7 +1240,7 @@ function profileHTML(r){
   return `<header class="topbar">${head}</header>
     <section class="prof">${storiesOf(r, true).length ? `<button class="story" style="width:auto" data-act="story-user" data-u="${r}"><div class="ring ${r !== S.me && storiesOf(r, true).every(s => viewersOf(s.id).includes(S.me)) ? 'seen' : ''}" style="width:92px;height:92px">${ringAvatar(r)}</div></button>` : avatar(r, 86)}
       <div class="stats"><div><b>${ps.length}</b><span>Beiträge</span></div><div><b>${st.length}</b><span>Stories</span></div><div><b>${week}</b><span>diese Woche</span></div></div></section>
-    <div class="pname"><b>${esc(nick(r))}</b>${prof(r).bio ? `<p class="bio">${esc(prof(r).bio)}</p>` : ''}${safeLink(prof(r).link) ? `<a class="plink" href="${esc(safeLink(prof(r).link))}" target="_blank" rel="noopener">🔗 ${esc(safeLink(prof(r).link).replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, ''))}</a>` : ''}<span class="muted">Lieblingston: ${soundInfo(prof(r).sound)[1]} ${soundInfo(prof(r).sound)[2]}</span></div>
+    <div class="pname"><b>${esc(nick(r))}${prof(r).pronouns ? ` <span class="muted" style="font-weight:400">${esc(prof(r).pronouns)}</span>` : ''}</b>${prof(r).bio ? `<p class="bio">${esc(prof(r).bio)}</p>` : ''}${safeLink(prof(r).link) ? `<a class="plink" href="${esc(safeLink(prof(r).link))}" target="_blank" rel="noopener">🔗 ${esc(safeLink(prof(r).link).replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, ''))}</a>` : ''}<span class="muted">Lieblingston: ${soundInfo(prof(r).sound)[1]} ${soundInfo(prof(r).sound)[2]}</span></div>
     ${own ? `<div class="pact"><button class="btn" data-act="edit-profile">Profil bearbeiten</button><button class="btn" data-act="create-story">Story hinzufügen</button></div>` : `<div class="pact"><button class="btn" data-act="tab" data-tab="chat">Nachricht</button></div>`}
     <div class="ptabs"><button class="${S.profileTab === 'grid' ? 'on' : ''}" data-act="ptab" data-t="grid" aria-label="Beiträge">${I.grid}</button>
       <button class="${S.profileTab === 'archive' ? 'on' : ''}" data-act="ptab" data-t="archive" aria-label="Story-Archiv">${I.archive}</button>
@@ -1181,7 +1261,7 @@ function renderChat(){
   if (!$('#clog')) {
     const o = other();
     app.innerHTML = `<div class="chat"><header class="topbar"><button class="icon-btn" data-act="tab" data-tab="home" aria-label="Zurück">${I.back}</button>
-      <button class="who" style="background:none;border:0;padding:0;display:flex;align-items:center;gap:10px;cursor:pointer" data-act="profile" data-u="${o}">${avatar(o, 32)}<h1>${esc(nick(o))}</h1></button></header><div class="clog" id="clog"></div>
+      <button class="who" style="background:none;border:0;padding:0;display:flex;align-items:center;gap:10px;cursor:pointer" data-act="profile" data-u="${o}">${avatar(o, 32)}<h1>${esc(nick(o))}</h1></button><button class="icon-btn" style="margin-left:auto" data-act="tab" data-tab="map" aria-label="Karte">${I.pin}</button></header><div class="clog" id="clog"></div>
       <form class="cbar" id="cbar"><button class="icon-btn" type="button" data-act="sound-sheet" aria-label="Sound schicken">${I.bell}</button>
       <input type="text" id="cmsg" placeholder="Nachricht …" autocomplete="off" enterkeyhint="send" maxlength="2000">
       <button class="link strong" type="submit">Senden</button></form></div>`;
@@ -1530,6 +1610,10 @@ function profileFormHTML(r){
 }
 function refreshEditAvatar(){
   const box = $('#eav'); if (!box) return;
+  if (S.tab === 'editprof') {
+    const p = prof(S.me), photo = E.avatarURL ? `<img src="${E.avatarURL}" alt="">` : (!E.removePhoto && p.avatar_path ? `<img data-media="${esc(p.avatar_path)}" alt="">` : I.person);
+    box.innerHTML = `<div class="ep-c ep-photo">${photo}</div><div class="ep-c ep-emoji">${esc(E.emoji)}</div>`; hydrate(box); return;
+  }
   box.innerHTML = E.avatarURL ? `<div class="av" style="width:86px;height:86px"><img src="${E.avatarURL}" alt=""></div>` : `<div class="av" style="width:86px;height:86px;font-size:48px">${esc(E.emoji)}</div>`;
 }
 async function saveProfileForm(){
@@ -1538,6 +1622,7 @@ async function saveProfileForm(){
   p.emoji = E.emoji; p.sound = E.sound; p.updated_at = Date.now();
   if ($('#ebio')) p.bio = $('#ebio').value.trim().slice(0, 150);
   if ($('#elink')) p.link = $('#elink').value.trim().slice(0, 200);
+  if ($('#epron')) p.pronouns = $('#epron').value.trim().slice(0, 20);
   if (E.avatarPr) p.avatar_path = await storeMedia(E.avatarPr);
   else if (E.removePhoto) p.avatar_path = null;
   await put('profiles', p);
@@ -1550,32 +1635,33 @@ function openProfileEdit(){
   closeSheet(); S.tab = 'editprof'; $('#app').innerHTML = ''; render(); window.scrollTo(0, 0);
 }
 function editProfHTML(){
-  const r = S.me, p = prof(r), fixed = USERS[r].fixedNick, lk = safeLink(p.link);
+  const r = S.me, p = prof(r), fixed = USERS[r].fixedNick;
+  const photo = E.avatarURL ? `<img src="${E.avatarURL}" alt="">` : (!E.removePhoto && p.avatar_path ? `<img data-media="${esc(p.avatar_path)}" alt="">` : I.person);
   return `<div id="editprof" class="editprof">
-    <header class="topbar ep-top"><button class="icon-btn" data-act="e-back" aria-label="Zurück">${I.back}</button><h1>Profil bearbeiten</h1><span style="width:39px"></span></header>
-    <div class="ep-pic"><div id="eav">${E.avatarURL ? `<div class="av" style="width:90px;height:90px"><img src="${E.avatarURL}" alt=""></div>` : (E.removePhoto ? `<div class="av" style="width:90px;height:90px;font-size:50px">${esc(E.emoji)}</div>` : avatar(r, 90))}</div>
-      <button class="link strong" data-act="e-picmenu">Bild bearbeiten</button></div>
-    <div class="ep-fields">
-      <label class="fbox"><small>Name</small><input type="text" id="enick" value="${esc(nick(r))}" maxlength="24" ${fixed ? 'readonly' : ''} autocomplete="off"></label>
-      <label class="fbox"><small>Benutzername</small><input type="text" value="${esc(nick(r).toLowerCase().replace(/\s+/g, '_'))}" readonly></label>
-      <label class="fbox"><small>Bio</small><textarea id="ebio" rows="2" maxlength="150" placeholder="Bio">${esc(p.bio || '')}</textarea><i id="ebioc">${(p.bio || '').length}/150</i></label>
-      <label class="fbox"><small>Links</small><input type="text" id="elink" value="${esc(p.link || '')}" maxlength="200" placeholder="Link hinzufügen" autocomplete="off" inputmode="url"></label>
-      <button class="fbox frow" data-act="e-sounds"><small>Lieblingston</small><span id="esndl">${soundInfo(E.sound)[1]} ${soundInfo(E.sound)[2]}</span>${I.chev}</button>
-      <div id="esnd" style="display:none"><div class="sounds">${SOUND_LIST.filter(s => s[0] !== 'alarm').map(s => `<button data-act="e-sound" data-s="${s[0]}" class="${s[0] === E.sound ? 'on' : ''}"><span>${s[1]}</span><small>${s[2]}</small></button>`).join('')}</div></div>
+    <header class="ep-top"><button class="icon-btn ep-back" data-act="e-back" aria-label="Zurück">${I.back}</button><h1>Profil bearbeiten</h1><span></span></header>
+    <div class="ep-pic" id="eav"><div class="ep-c ep-photo">${photo}</div><div class="ep-c ep-emoji">${esc(E.emoji)}</div></div>
+    <button class="ep-edit" data-act="e-picmenu">Bild oder Avatar bearbeiten</button>
+    <div class="ep-rows">
+      <label class="er"><span>Name</span><input type="text" id="enick" value="${esc(nick(r))}" maxlength="24" ${fixed ? 'readonly' : ''} autocomplete="off"></label>
+      <label class="er"><span>Benutzername</span><input type="text" value="${esc(nick(r).toLowerCase().replace(/\s+/g, '_'))}" readonly></label>
+      <label class="er"><span>Pronomen</span><input type="text" id="epron" value="${esc(p.pronouns || '')}" maxlength="20" placeholder="Pronomen" autocomplete="off"></label>
+      <label class="er"><span>Bio</span><textarea id="ebio" rows="1" maxlength="150" placeholder="Bio">${esc(p.bio || '')}</textarea></label>
+      <label class="er"><span>Links</span><input type="text" id="elink" value="${esc(p.link || '')}" maxlength="200" placeholder="Link hinzufügen" autocomplete="off" inputmode="url"></label>
+      <button class="er erb" data-act="e-sounds"><span>Lieblingston</span><em id="esndl">${soundInfo(E.sound)[1]} ${soundInfo(E.sound)[2]}</em>${I.chev}</button>
+      <div id="esnd" style="display:none;padding:10px 16px 4px"><div class="sounds">${SOUND_LIST.filter(s => s[0] !== 'alarm').map(s => `<button data-act="e-sound" data-s="${s[0]}" class="${s[0] === E.sound ? 'on' : ''}"><span>${s[1]}</span><small>${s[2]}</small></button>`).join('')}</div></div>
     </div>
-    <div class="ep-links">
-      <button data-act="settings">Einladungslink & Einstellungen</button>
-      <button data-act="perm-push">Benachrichtigungen</button>
-      <button data-act="howto">So funktioniert Unsergram</button>
+    <div class="ep-rows ep-more">
+      <button class="er erb" data-act="settings"><span class="wide">Einladungslink & Einstellungen</span>${I.chev}</button>
+      <button class="er erb" data-act="perm-push"><span class="wide">Benachrichtigungen</span>${I.chev}</button>
+      <button class="er erb" data-act="howto"><span class="wide">So funktioniert Unsergram</span>${I.chev}</button>
     </div>
-    ${fixed ? '<p class="fine" style="padding:0 16px">Dein Name „j from e“ ist fest eingestellt.</p>' : ''}
   </div>`;
 }
 function openPicMenu(){
   const has = prof(S.me).avatar_path && !E.removePhoto || E.avatarURL;
   openSheet(`<div class="ep-pics">${avatar(S.me, 56)}</div><div class="menu">
     <label class="btn">Neues Profilbild<input type="file" id="efile" accept="image/*" hidden></label>
-    <button class="btn" data-act="e-emojis">Emoji als Profilbild</button>
+    <button class="btn" data-act="e-emojis">Avatar (Emoji) wählen</button>
     ${has ? '<button class="btn danger" data-act="e-nophoto">Aktuelles Bild entfernen</button>' : ''}
     <button class="btn" data-act="close-sheet">Abbrechen</button></div>`);
 }
@@ -1784,7 +1870,7 @@ document.addEventListener('click', async e => {
     case 'alert-close': closeAlert(); break;
     case 'settings': openSettings(); break;
     case 'edit-profile': openProfileEdit(); break;
-    case 'e-emoji': E.emoji = t.dataset.e; E.removePhoto = true; E.avatarPr = null; if (E.avatarURL) { URL.revokeObjectURL(E.avatarURL); E.avatarURL = null; } $$('.emojis button').forEach(b => b.classList.toggle('on', b === t)); refreshEditAvatar(); if (S.tab === 'editprof') closeSheet(); break;
+    case 'e-emoji': E.emoji = t.dataset.e; if (S.tab !== 'editprof') { E.removePhoto = true; E.avatarPr = null; if (E.avatarURL) { URL.revokeObjectURL(E.avatarURL); E.avatarURL = null; } } $$('.emojis button').forEach(b => b.classList.toggle('on', b === t)); refreshEditAvatar(); if (S.tab === 'editprof') closeSheet(); break;
     case 'e-sound': E.sound = t.dataset.s; Sound.play(E.sound); $$('.sounds button').forEach(b => b.classList.toggle('on', b === t)); { const l = $('#esndl'); if (l) l.textContent = `${soundInfo(E.sound)[1]} ${soundInfo(E.sound)[2]} ›`; } break;
     case 'e-picmenu': openPicMenu(); break;
     case 'e-back': leaveEditProf(); break;
