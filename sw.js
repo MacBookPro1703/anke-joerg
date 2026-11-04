@@ -1,5 +1,5 @@
 // Anke & Jörg – Service Worker (Offline-Start + Push)
-const CACHE = 'aj-v7';
+const CACHE = 'aj-v8';
 const SHELL = ['./', './index.html', './manifest.json', './icon-192.png?v=3', './icon-512.png?v=3'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));
@@ -15,7 +15,7 @@ self.addEventListener('fetch', e => {
     return;
   }
   if (u.origin !== location.origin) return;
-  e.respondWith(fetch(req).then(res => { const c = res.clone(); caches.open(CACHE).then(ca => ca.put(req, c)); return res; })
+  e.respondWith(fetch(req, { cache:'no-store' }).then(res => { const c = res.clone(); caches.open(CACHE).then(ca => ca.put(req, c)); return res; })
     .catch(() => caches.match(req).then(r => r || caches.match('./index.html'))));
 });
 self.addEventListener('push', e => {

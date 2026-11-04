@@ -423,6 +423,7 @@ const CONFIG = {
 };
 
 const APP_NAME = 'Unsergram';
+const APP_VERSION = '4.11.-3';
 const USERS = {
   je:   { id:'je',   nick:'j from e', email:'je@ebbing-project.de', fixedNick:true,  emoji:'🙂', sound:'glocke' },
   anke: { id:'anke', nick:'Anke',     email:'',                     fixedNick:false, emoji:'🌻', sound:'kuh' }
@@ -1596,7 +1597,7 @@ async function openSettings(){
     <button class="btn" data-act="howto">So funktioniert’s (Hintergrund, Fotos, iPhone)</button>
     ${!Sync.configured ? '<button class="btn" data-act="switch-user">Testmodus: Ansicht wechseln</button>' : ''}
     <button class="btn" data-act="close-sheet">Schließen</button></div>
-    <p class="fine" style="text-align:center;margin-top:12px">${esc(syncLine())}${pend ? ` · ${pend} Änderung(en) warten` : ''}</p>`, 'tall');
+    <p class="fine" style="text-align:center;margin-top:12px">Version ${APP_VERSION} · ${esc(syncLine())}${pend ? ` · ${pend} Änderung(en) warten` : ''}</p>`, 'tall');
 }
 function openInvite(){
   const u = inviteURL(), txt = `Hier ist unser Unsergram 💛 Öffne den Link in Safari, dort steht, wie es weitergeht: ${u}`;
@@ -1858,7 +1859,12 @@ setInterval(() => { if (S.me && !S.onb && S.tab === 'home' && !$('.backdrop') &&
 
 /* ---------- Start ---------- */
 async function boot(){
-  if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('./sw.js').catch(() => {});
+  if ('serviceWorker' in navigator && location.protocol === 'https:') {
+    const hadCtrl = !!navigator.serviceWorker.controller; let reloaded = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => { if (hadCtrl && !reloaded) { reloaded = true; location.reload(); } });
+    navigator.serviceWorker.register('./sw.js', { updateViaCache:'none' }).then(r => r.update()).catch(() => {});
+    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') navigator.serviceWorker.getRegistration().then(r => r && r.update()).catch(() => {}); });
+  }
   for (const t of Object.keys(TABLES)) (await DB.entries(t)).forEach(([k, v]) => D[t].set(k, v));
   S.handled = new Set((await meta.get('handled')) || []);
   S.recapSeen = new Set((await meta.get('recapSeen')) || []);
