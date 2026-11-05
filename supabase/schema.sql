@@ -186,3 +186,13 @@ revoke all on public.app_keys from anon, authenticated;
 grant execute on function public.create_space(text), public.join_space(text, text), public.space_secret(uuid), public.is_member(uuid) to authenticated;
 
 select 'Anke & Jörg: Schema fertig ✔' as status;
+
+-- 05.11.2026: Zusammengeführte Räume – Geräte wechseln automatisch in den gemeinsamen Raum
+alter table public.spaces add column if not exists merged_into uuid;
+create or replace function public.my_space() returns json
+language sql security definer stable set search_path = public as $$
+  select json_build_object('space_id', coalesce(s.merged_into, s.id), 'secret', (select x.secret from public.spaces x where x.id = coalesce(s.merged_into, s.id)))
+  from public.members m join public.spaces s on s.id = m.space_id
+  where m.user_id = auth.uid() order by m.created_at desc limit 1;
+$$;
+grant execute on function public.my_space() to authenticated;
