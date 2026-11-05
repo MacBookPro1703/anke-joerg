@@ -518,7 +518,7 @@ const CONFIG = {
 };
 
 const APP_NAME = 'Unsergram';
-const APP_VERSION = '5.11.-7';
+const APP_VERSION = '5.11.-8';
 const USERS = {
   je:   { id:'je',   nick:'j from e', email:'je@ebbing-project.de', fixedNick:true,  emoji:'🙂', sound:'glocke' },
   anke: { id:'anke', nick:'Anke',     email:'',                     fixedNick:false, emoji:'🌻', sound:'kuh' }
@@ -869,7 +869,9 @@ function effects(t, row, prev, live){
     if (S.tab === 'chat' && document.visibilityState === 'visible') markRead();
     else { Sound.play('pling'); toast(`💬 ${nick(row.author)}: ${msgText(row.text).slice(0, 60)}`); }
   }
-  if (t === 'posts' && row.author !== S.me) toast(`✨ ${nick(row.author)} hat einen Moment geteilt`);
+  if (t === 'posts' && row.author !== S.me) { Sound.play('pling'); toast(`✨ ${nick(row.author)} hat einen Moment geteilt`); }
+  if (t === 'stories' && row.author !== S.me) { Sound.play('pling'); toast(`⭕ ${nick(row.author)} hat eine Story geteilt`); }
+  if (t === 'comments' && row.author !== S.me) { Sound.play('pling'); toast(`💬 ${nick(row.author)} hat kommentiert`); }
 }
 
 /* ---------- Medien ---------- */
@@ -1468,6 +1470,7 @@ async function publish(){
   if (C.pr) { base.media_path = await storeMedia(C.pr); base.media_type = C.pr.type; base.w = C.pr.w; base.h = C.pr.h; base.d = C.pr.d || 0; }
   if (C.mode === 'story') {
     await put('stories', base); closeSheet(); S.tab = 'home'; render(); toast('Story geteilt');
+    Sync.push('story', `${nick(S.me)} hat eine Story geteilt ⭕`, text.slice(0, 120));
   } else {
     base.challenge = chk && chk.checked ? challengeFor(Date.now()).id : null;
     await put('posts', base); closeSheet(); S.tab = 'home'; render(); window.scrollTo({ top:0 }); toast('Moment geteilt');
@@ -1757,6 +1760,7 @@ async function openSettings(){
   openSheet(`<h3 class="sh-title">Einstellungen</h3><div class="menu">
     <button class="btn" data-act="edit-profile">Profil & Lieblingston</button>
     <button class="btn" data-act="perm-push">${pushOk ? '✓ Benachrichtigungen aktiv – neu verbinden' : 'Benachrichtigungen einschalten'}</button>
+    ${pushOk ? '<button class="btn" data-act="push-test">Test-Benachrichtigung an mich</button>' : ''}
     <button class="btn" data-act="perm-geo">Standort testen</button>
     ${S.secret ? '<button class="btn" data-act="invite">Einladungslink für ' + esc(nick(other())) + '</button><button class="btn" data-act="restore-link">Mein Wiederherstellen-Link</button>' : ''}
     <button class="btn" data-act="challenge">Challenges</button>
@@ -1987,6 +1991,15 @@ document.addEventListener('click', async e => {
     case 'e-sounds': { const x = $('#esnd'); x.style.display = x.style.display === 'none' ? 'block' : 'none'; break; }
     case 'e-nophoto': E.removePhoto = true; E.avatarPr = null; E.avatarURL = null; refreshEditAvatar(); if (S.tab === 'editprof') closeSheet(); break;
     case 'e-save': await saveProfileForm(); closeSheet(); render(); toast('Gespeichert'); break;
+    case 'push-test': {
+      if (!Sync.ready) { toast('Nicht verbunden – Internet?'); break; }
+      try {
+        const { data, error } = await Sync.sb.functions.invoke('send-push', { body:{ space_id:S.spaceId, kind:'test', title:'Unsergram 🔔', body:'Test: Benachrichtigungen kommen an ✓', self:true } });
+        if (error) throw error;
+        toast(data && data.sent ? `Gesendet an ${data.sent} Gerät(e) – App jetzt kurz schließen` : 'Kein Gerät registriert – bitte „Benachrichtigungen einschalten“');
+      } catch (err) { toast('Test fehlgeschlagen: ' + (err.message || err)); }
+      break;
+    }
     case 'perm-push': try { await enablePush(); toast('Benachrichtigungen aktiv ✓'); } catch (err) { toast(err.message); } break;
     case 'perm-geo': { const p = await getPos(); toast(p ? `Standort ok ✓ (±${p.acc} m)` : 'Standort nicht erlaubt oder nicht gefunden'); break; }
     case 'invite': openInvite(); break;

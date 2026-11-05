@@ -34,7 +34,7 @@ Deno.serve(async (req) => {
       .eq("space_id", body.space_id).eq("user_id", u.user.id).maybeSingle();
     if (!m) return json({ error: "forbidden" }, 403);
 
-    const target = m.role === "je" ? "anke" : "je";
+    const target = body.self ? m.role : (m.role === "je" ? "anke" : "je");
     const { data: subs } = await admin.from("push_subs").select("*")
       .eq("space_id", body.space_id).eq("role", target);
 
