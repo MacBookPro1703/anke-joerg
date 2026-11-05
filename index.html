@@ -491,6 +491,7 @@ body.dark-tab .tabbar .icon-btn.act{background:rgba(255,255,255,.15)}
 .tabbar .icon-btn.act .av{box-shadow:0 0 0 2px var(--fg)}
 .tabbar .dot{right:calc(50% - 22px)}
 .step p.ok{color:#1a9b4b}
+a.btn:not(.primary){color:var(--fg)}
 </style>
 </head>
 <body>
@@ -507,7 +508,7 @@ const CONFIG = {
 };
 
 const APP_NAME = 'Unsergram';
-const APP_VERSION = '5.11.-1';
+const APP_VERSION = '5.11.-2';
 const USERS = {
   je:   { id:'je',   nick:'j from e', email:'je@ebbing-project.de', fixedNick:true,  emoji:'🙂', sound:'glocke' },
   anke: { id:'anke', nick:'Anke',     email:'',                     fixedNick:false, emoji:'🌻', sound:'kuh' }
@@ -1681,6 +1682,32 @@ async function leaveEditProf(){
 
 /* ---------- Einstellungen ---------- */
 function inviteURL(){ return `${location.origin}${location.pathname}#join=${S.secret}`; }
+function restoreURL(){ return `${location.origin}${location.pathname}#restore=${S.secret}-${S.me}`; }
+const RESTORE_RX = /restore=([a-f0-9]{16,})-(je|anke)/i;
+function openRestoreLink(){
+  const u = restoreURL(), txt = `Mein Unsergram-Wiederherstellen-Link (${nick(S.me)}) – nicht weitergeben: ${u}`;
+  openSheet(`<h3 class="sh-title">Dein Wiederherstellen-Link</h3>
+    <p class="muted" style="margin:0 0 6px">Damit holst du dein Unsergram mit einem Tipp zurück – z. B. wenn du die App neu auf den Home-Bildschirm legst oder ein neues Handy hast. Alles ist danach wieder da.</p>
+    <p style="margin:0 0 6px;font-size:13px"><b>Nur für dich.</b> Wer diesen Link hat, ist in der App „${esc(nick(S.me))}“. ${esc(nick(other()))} bekommt den normalen Einladungslink.</p>
+    <div class="linkbox">${esc(u)}</div>
+    <button class="btn primary" data-act="copy-restore">Link kopieren</button>
+    <a class="btn" style="text-decoration:none" href="https://wa.me/?text=${encodeURIComponent(txt)}" target="_blank" rel="noopener">Per WhatsApp an mich schicken</a>
+    <button class="btn" data-act="share-restore">Teilen / in Notizen sichern …</button>
+    <p class="fine" style="margin-top:12px"><b>So geht’s später:</b> App neu öffnen → „Wiederherstellen“ → Einfügen → fertig.</p>`, 'tall');
+}
+async function doRestore(secret, role){
+  if (!Sync.configured) throw new Error('Kein Server eingerichtet');
+  await Sync.ensureAuth();
+  const r = await Sync.sb.rpc('join_space', { p_secret:secret, p_role:role }); if (r.error) throw r.error;
+  S.spaceId = r.data.space_id; S.secret = r.data.secret; S.me = role;
+  await meta.set('device', { user:S.me, spaceId:S.spaceId, secret:S.secret });
+  if (location.hash) history.replaceState(null, '', location.pathname);
+  await Sync.start();
+  const needPush = 'Notification' in window && Notification.permission !== 'granted' && !(isIOS() && !standalone());
+  if (needPush) { S.onb = { step:'push', mode:'restore', role }; render(); }
+  else { S.onb = null; S.tab = 'home'; render(); }
+  toast(`Willkommen zurück, ${nick(S.me)} ✓`);
+}
 async function openSettings(){
   const pend = await Outbox.count();
   const pushOk = 'Notification' in window && Notification.permission === 'granted';
@@ -1688,7 +1715,7 @@ async function openSettings(){
     <button class="btn" data-act="edit-profile">Profil & Lieblingston</button>
     <button class="btn" data-act="perm-push">${pushOk ? '✓ Benachrichtigungen aktiv – neu verbinden' : 'Benachrichtigungen einschalten'}</button>
     <button class="btn" data-act="perm-geo">Standort testen</button>
-    ${S.secret ? '<button class="btn" data-act="invite">Einladungslink für ' + esc(nick(other())) + '</button>' : ''}
+    ${S.secret ? '<button class="btn" data-act="invite">Einladungslink für ' + esc(nick(other())) + '</button><button class="btn" data-act="restore-link">Mein Wiederherstellen-Link</button>' : ''}
     <button class="btn" data-act="challenge">Challenges</button>
     ${!standalone() ? `<button class="btn" data-act="${S.installEvt ? 'install' : 'howto'}">${isAndroid() ? 'Auf den Startbildschirm (Android)' : 'Auf den Home-Bildschirm'}</button>` : ''}
     <button class="btn" data-act="howto">So funktioniert’s (Hintergrund, Fotos, iPhone & Android)</button>
@@ -1732,7 +1759,7 @@ async function enablePush(){
 /* ---------- Onboarding ---------- */
 const ONB_STEPS_NEW = ['welcome','who','profile','home','push','geo','info','invite'];
 const ONB_STEPS_JOIN = ['welcome','who','profile','home','push','geo','info'];
-function onbSteps(){ let s = S.onb.mode === 'join' ? ONB_STEPS_JOIN : ONB_STEPS_NEW; if (!Sync.configured) s = ['welcome','who','profile']; if (!((isIOS() || isAndroid()) && !standalone())) s = s.filter(x => x !== 'home');
+function onbSteps(){ if (S.onb.mode === 'restore') return S.onb.step === 'push' ? ['push'] : ['welcome']; let s = S.onb.mode === 'join' ? ONB_STEPS_JOIN : ONB_STEPS_NEW; if (!Sync.configured) s = ['welcome','who','profile']; if (!((isIOS() || isAndroid()) && !standalone())) s = s.filter(x => x !== 'home');
   else if (isAndroid()) s = [...s.filter(x => x !== 'home'), 'home'];
   return s; }
 function onbHTML(){
@@ -1742,6 +1769,16 @@ function onbHTML(){
   const skip = `<button class="btn" data-act="onb-next" style="background:none;color:var(--muted)">Später</button>`;
   switch (o.step) {
     case 'welcome': {
+      if (o.mode === 'restore') {
+        if (isIOS() && !standalone()) return `<div class="step"><div class="ico">🔑</div><h2>Wiederherstellen</h2>
+          <p>Auf dem iPhone in dieser Reihenfolge:</p>
+          <ol><li>Unten auf <b>„Link kopieren“</b> tippen</li><li>In Safari auf <b>Teilen</b> → <b>„Zum Home-Bildschirm“</b></li><li>Die App über das neue Symbol öffnen</li><li><b>„Wiederherstellen“</b> → <b>„Einfügen“</b></li></ol>
+          <div class="grow"></div><button class="btn primary" data-act="copy-join">Link kopieren</button>
+          <button class="btn" data-act="onb-restore-go" style="background:none;color:var(--muted)">Lieber hier im Browser</button></div>`;
+        return `<div class="step"><div class="grow" style="display:flex;flex-direction:column;justify-content:center;text-align:center">
+          <div class="wordmark" style="font-size:58px">${esc(APP_NAME)}</div><p style="margin-top:12px">Willkommen zurück, ${esc(USERS[o.role].nick === 'Anke' ? 'Anke' : USERS[o.role].nick)} 🔑</p></div>
+          <button class="btn primary" data-act="onb-restore-go" id="rstgo">Wiederherstellen</button><p class="fine" id="rsterr" style="color:var(--danger);text-align:center"></p></div>`;
+      }
       if (o.mode === 'join' && isIOS() && !standalone()) return `<div class="step"><div class="ico">💌</div><h2>Du wurdest eingeladen</h2>
         <p>Auf dem iPhone in dieser Reihenfolge:</p>
         <ol><li>Unten auf <b>„Einladung kopieren“</b> tippen</li><li>In Safari auf <b>Teilen</b> (Quadrat mit Pfeil) → <b>„Zum Home-Bildschirm“</b></li>
@@ -1752,9 +1789,10 @@ function onbHTML(){
         <div class="wordmark" style="font-size:58px">${esc(APP_NAME)}</div>
         <p style="margin-top:12px">${o.mode === 'join' ? 'Du wurdest eingeladen 💛 Ein paar Schritte, dann seid ihr verbunden.' : 'Nur für euch zwei. Momente, Stories, Challenges, Chat – und ein Knopf, wenn man den anderen braucht.'}</p></div>
         ${dots}${o.mode === 'join' ? next('Los geht’s') : ''}
-        ${o.mode !== 'join' && Sync.configured ? `<div id="joinbox" style="display:none"><input type="text" id="joinin" placeholder="Einladungslink hier einfügen" autocomplete="off" style="margin-bottom:8px">
-          <button class="btn primary" data-act="onb-join">Mit Einladung verbinden</button></div>
+        ${o.mode !== 'join' && Sync.configured ? `<div id="joinbox" style="display:none"><input type="text" id="joinin" placeholder="Einladungs- oder Wiederherstellen-Link einfügen" autocomplete="off" style="margin-bottom:8px">
+          <button class="btn primary" data-act="onb-join" id="joingo">Verbinden</button></div>
           <button class="btn primary" data-act="onb-paste" id="joinpaste">Ich habe eine Einladung</button>
+          <button class="btn" data-act="onb-paste" data-r="1">🔑 Wiederherstellen</button>
           <button class="btn" data-act="onb-next">Neu einrichten (ich lade ein)</button>` : (o.mode !== 'join' ? next('Einrichten') : '')}</div>`;
     }
     case 'who': return `<div class="step"><div class="ico">👋</div><h2>Wer bist du?</h2><p>Das bleibt auf diesem Handy so eingestellt.</p><div class="grow"></div>${dots}
@@ -1915,13 +1953,20 @@ document.addEventListener('click', async e => {
     }
     case 'copy-join': copyText(location.href); t.textContent = '✓ Kopiert – jetzt Teilen → Zum Home-Bildschirm'; break;
     case 'onb-paste': {
-      $('#joinbox').style.display = 'block'; t.style.display = 'none';
-      try { const c = await navigator.clipboard.readText(); if (/join=|^[a-f0-9]{16,}$/i.test(c.trim())) $('#joinin').value = c.trim(); } catch (_) {}
+      $('#joinbox').style.display = 'block'; $$('[data-act=onb-paste]').forEach(b => b.style.display = 'none');
+      try { const c = await navigator.clipboard.readText(); if (/join=|restore=|^[a-f0-9]{16,}$/i.test(c.trim())) $('#joinin').value = c.trim(); } catch (_) {}
       $('#joinin').focus(); break;
     }
+    case 'onb-restore-go': { const b = $('#rstgo'); if (b) { b.disabled = true; b.textContent = 'Stelle wieder her …'; }
+      try { await doRestore(S.onb.secret, S.onb.role); } catch (err) { if (b) { b.disabled = false; b.textContent = 'Nochmal versuchen'; } const e = $('#rsterr'); if (e) e.textContent = err.message || 'Fehlgeschlagen'; else toast(err.message || 'Fehlgeschlagen'); } break; }
+    case 'restore-link': openRestoreLink(); break;
+    case 'copy-restore': copyText(restoreURL()); break;
+    case 'share-restore': try { await navigator.share({ title:'Unsergram – Wiederherstellen', url:restoreURL() }); } catch (_) { copyText(restoreURL()); } break;
     case 'onb-join': {
-      const v = ($('#joinin').value || '').trim(), mm = v.match(/join=([a-f0-9]{16,})/i) || v.match(/^([a-f0-9]{16,})$/i);
-      if (!mm) { toast('Das sieht nicht nach einer Einladung aus'); break; }
+      const v = ($('#joinin').value || '').trim(), rr = v.match(RESTORE_RX);
+      if (rr) { t.disabled = true; t.textContent = 'Stelle wieder her …'; try { await doRestore(rr[1], rr[2].toLowerCase()); } catch (err) { t.disabled = false; t.textContent = 'Verbinden'; toast(err.message || 'Wiederherstellen fehlgeschlagen'); } break; }
+      const mm = v.match(/join=([a-f0-9]{16,})/i) || v.match(/^([a-f0-9]{16,})$/i);
+      if (!mm) { toast('Das sieht nicht nach einem Link von Unsergram aus'); break; }
       S.onb.mode = 'join'; S.onb.secret = mm[1]; S.onb.step = 'who'; render(); window.scrollTo(0, 0); break;
     }
     case 'onb-who': {
@@ -1986,14 +2031,14 @@ async function boot(){
   S.feedMode = (await meta.get('feedMode')) || 'all';
   S.actSeen = (await meta.get('actSeen')) || 0;
   const dev = await meta.get('device');
-  const m = location.hash.match(/join=([a-f0-9]{16,})/i);
+  const m = location.hash.match(/join=([a-f0-9]{16,})/i), rh = location.hash.match(RESTORE_RX);
   if (dev && dev.user) {
     S.me = dev.user; S.spaceId = dev.spaceId || 'local'; S.secret = dev.secret || null;
     if (m && m[1] !== S.secret) toast('Dieses Handy ist schon verbunden.');
     if (location.hash) history.replaceState(null, '', location.pathname);
     render(); Sync.start().then(scheduleRender);
   } else {
-    S.onb = { step:'welcome', mode:m ? 'join' : 'new', secret:m ? m[1] : null, role:null };
+    S.onb = rh ? { step:'welcome', mode:'restore', secret:rh[1], role:rh[2].toLowerCase() } : { step:'welcome', mode:m ? 'join' : 'new', secret:m ? m[1] : null, role:null };
     render();
   }
 }
