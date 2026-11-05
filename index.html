@@ -492,6 +492,14 @@ body.dark-tab .tabbar .icon-btn.act{background:rgba(255,255,255,.15)}
 .tabbar .dot{right:calc(50% - 22px)}
 .step p.ok{color:#1a9b4b}
 a.btn:not(.primary){color:var(--fg)}
+/* Ziehen zum Aktualisieren */
+.ptr{position:fixed;left:50%;top:calc(10px + env(safe-area-inset-top));z-index:90;width:38px;height:38px;border-radius:50%;
+  background:var(--sheet);box-shadow:0 2px 10px rgba(0,0,0,.18);display:flex;align-items:center;justify-content:center;
+  transform:translate(-50%,-60px);transition:transform .25s ease;pointer-events:none}
+.ptr-spin{width:20px;height:20px;border-radius:50%;border:2.5px solid var(--line);border-top-color:var(--fg)}
+.ptr.ready .ptr-spin{border-top-color:#e8457c}
+.ptr.spinning .ptr-spin{animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
@@ -508,7 +516,7 @@ const CONFIG = {
 };
 
 const APP_NAME = 'Unsergram';
-const APP_VERSION = '5.11.-5';
+const APP_VERSION = '5.11.-6';
 const USERS = {
   je:   { id:'je',   nick:'j from e', email:'je@ebbing-project.de', fixedNick:true,  emoji:'🙂', sound:'glocke' },
   anke: { id:'anke', nick:'Anke',     email:'',                     fixedNick:false, emoji:'🌻', sound:'kuh' }
@@ -780,10 +788,12 @@ const Sync = {
   },
   async pull(){
     if (!this.ready) return;
-    for (const t of Object.keys(TABLES)) {
+    const res = await Promise.all(Object.keys(TABLES).map(t => {
       let q = this.sb.from(t).select('*').eq('space_id', S.spaceId);
       if (t === 'pings') q = q.gte('created_at', Date.now() - 30*DAY);
-      const { data, error } = await q;
+      return q.then(r => [t, r]);
+    }));
+    for (const [t, { data, error }] of res) {
       if (error) { console.warn(t, error); continue; }
       const items = [];
       data.forEach(row => { const k = TABLES[t].key(row); const prev = D[t].get(k); D[t].set(k, row); items.push([k, row]); effects(t, row, prev, false); });
@@ -2057,6 +2067,54 @@ document.addEventListener('keydown', e => {
   if (e.key === 'ArrowLeft') prevItem();
 });
 setInterval(() => { if (S.me && !S.onb && S.tab === 'home' && !$('.backdrop') && !$('#viewer')) scheduleRender(); }, 60000);
+
+/* ---------- Nach unten ziehen = aktualisieren ---------- */
+const PTR = { y0:null, dist:0, busy:false, el:null };
+function ptrEl(){
+  if (!PTR.el) { PTR.el = document.createElement('div'); PTR.el.className = 'ptr'; PTR.el.innerHTML = '<div class="ptr-spin"></div>'; document.body.appendChild(PTR.el); }
+  return PTR.el;
+}
+function ptrAllowed(){
+  return S.me && !S.onb && !PTR.busy && !$('.backdrop') && !$('#viewer') && !$('.alert') && !['reels', 'map'].includes(S.tab) && window.scrollY <= 0;
+}
+document.addEventListener('touchstart', e => { PTR.y0 = ptrAllowed() && e.touches.length === 1 ? e.touches[0].clientY : null; PTR.dist = 0; }, { passive:true });
+document.addEventListener('touchmove', e => {
+  if (PTR.y0 == null) return;
+  const d = e.touches[0].clientY - PTR.y0;
+  if (d <= 0 || window.scrollY > 0) { PTR.dist = 0; ptrEl().style.transform = 'translate(-50%,-60px)'; return; }
+  PTR.dist = Math.min(110, d * 0.5);
+  const el = ptrEl(); el.style.transition = 'none'; el.style.transform = `translate(-50%,${PTR.dist - 50}px) rotate(${PTR.dist * 4}deg)`;
+  el.classList.toggle('ready', PTR.dist > 65);
+}, { passive:true });
+document.addEventListener('touchend', () => {
+  if (PTR.y0 == null) return; PTR.y0 = null;
+  const el = ptrEl(); el.style.transition = '';
+  if (PTR.dist > 65) refreshAll(); else el.style.transform = 'translate(-50%,-60px)';
+  PTR.dist = 0;
+});
+async function refreshAll(){
+  if (PTR.busy) return; PTR.busy = true;
+  const el = ptrEl(); el.classList.add('spinning'); el.style.transform = 'translate(-50%,16px)';
+  try {
+    // 1) neue App-Version? → neu laden
+    try {
+      const html = await fetch('./index.html?ts=' + Date.now(), { cache:'no-store' }).then(r => r.text());
+      const v = (html.match(/APP_VERSION = '([^']+)'/) || [])[1];
+      if (v && v !== APP_VERSION) {
+        toast('Neue Version ' + v + ' – wird geladen …');
+        const reg = 'serviceWorker' in navigator ? await navigator.serviceWorker.getRegistration() : null;
+        if (reg) { try { await reg.update(); } catch (_) {} }
+        if ('caches' in window) { try { for (const k of await caches.keys()) await caches.delete(k); } catch (_) {} }
+        setTimeout(() => location.reload(), 600); return;
+      }
+    } catch (_) {}
+    // 2) Daten neu holen
+    if (Sync.ready) { await Sync.pull(); Outbox.flush(); } else await Sync.start();
+    render(); toast('Aktualisiert ✓');
+  } finally {
+    setTimeout(() => { el.classList.remove('spinning', 'ready'); el.style.transform = 'translate(-50%,-60px)'; PTR.busy = false; }, 350);
+  }
+}
 
 /* ---------- Start ---------- */
 window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); S.installEvt = e; if (S.onb && S.onb.step === 'home') render(); });
