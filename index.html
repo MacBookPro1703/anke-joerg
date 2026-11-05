@@ -490,6 +490,7 @@ body.dark-tab .tabbar .icon-btn.act{background:rgba(255,255,255,.15)}
 .tabbar .icon-btn .av{width:28px!important;height:28px!important;font-size:16px!important;flex:0 0 28px;outline:0}
 .tabbar .icon-btn.act .av{box-shadow:0 0 0 2px var(--fg)}
 .tabbar .dot{right:calc(50% - 22px)}
+.step p.ok{color:#1a9b4b}
 </style>
 </head>
 <body>
@@ -506,7 +507,7 @@ const CONFIG = {
 };
 
 const APP_NAME = 'Unsergram';
-const APP_VERSION = '4.11.-6';
+const APP_VERSION = '5.11.-1';
 const USERS = {
   je:   { id:'je',   nick:'j from e', email:'je@ebbing-project.de', fixedNick:true,  emoji:'🙂', sound:'glocke' },
   anke: { id:'anke', nick:'Anke',     email:'',                     fixedNick:false, emoji:'🌻', sound:'kuh' }
@@ -1731,7 +1732,9 @@ async function enablePush(){
 /* ---------- Onboarding ---------- */
 const ONB_STEPS_NEW = ['welcome','who','profile','home','push','geo','info','invite'];
 const ONB_STEPS_JOIN = ['welcome','who','profile','home','push','geo','info'];
-function onbSteps(){ let s = S.onb.mode === 'join' ? ONB_STEPS_JOIN : ONB_STEPS_NEW; if (!Sync.configured) s = ['welcome','who','profile']; if (!((isIOS() || isAndroid()) && !standalone())) s = s.filter(x => x !== 'home'); return s; }
+function onbSteps(){ let s = S.onb.mode === 'join' ? ONB_STEPS_JOIN : ONB_STEPS_NEW; if (!Sync.configured) s = ['welcome','who','profile']; if (!((isIOS() || isAndroid()) && !standalone())) s = s.filter(x => x !== 'home');
+  else if (isAndroid()) s = [...s.filter(x => x !== 'home'), 'home'];
+  return s; }
 function onbHTML(){
   const o = S.onb, steps = onbSteps(), i = steps.indexOf(o.step);
   const dots = `<div class="dots">${steps.map((_, k) => `<i class="${k === i ? 'on' : ''}"></i>`).join('')}</div>`;
@@ -1758,11 +1761,13 @@ function onbHTML(){
         <button class="btn primary" data-act="onb-who" data-u="je">Ich bin j from e</button><button class="btn" data-act="onb-who" data-u="anke">Ich bin Anke</button></div>`;
     case 'profile': return `<div class="step"><h2>Dein Profil</h2>${profileFormHTML(o.role)}<div class="grow" style="min-height:16px"></div>${dots}
         <button class="btn primary" data-act="onb-profile" id="onbgo">${Sync.configured ? 'Weiter & verbinden' : 'Los geht’s'}</button><p class="fine" id="onberr" style="color:var(--danger);text-align:center"></p></div>`;
-    case 'home': if (isAndroid()) return `<div class="step"><div class="ico">📲</div><h2>Auf den Startbildschirm</h2>
-        <p>Dann startet Unsergram wie eine richtige App – mit eigenem Symbol und ohne Browser-Leiste.</p>
-        ${S.installEvt ? '' : `<ol><li>Oben rechts in Chrome auf die <b>drei Punkte ⋮</b> tippen</li><li><b>„App installieren“</b> oder <b>„Zum Startbildschirm hinzufügen“</b> wählen</li><li>Bestätigen – fertig</li></ol>`}
-        <p>Alles, was du hier schon eingerichtet hast, bleibt erhalten.</p><div class="grow"></div>${dots}
-        ${S.installEvt ? '<button class="btn primary" data-act="install">App installieren</button>' + skip : next('Erledigt / Weiter')}</div>`;
+    case 'home': if (isAndroid()) return `<div class="step"><div class="ico">📲</div><h2>Letzter Schritt: Unsergram auf den Startbildschirm</h2>
+        <p>Dann startet Unsergram wie eine richtige App – mit eigenem Symbol, ohne Browser-Leiste. Alles, was du gerade eingerichtet hast, bleibt erhalten.</p>
+        ${S.installed ? '<p class="ok">✓ Unsergram ist installiert. Du findest es jetzt auf deinem Startbildschirm.</p>'
+          : S.installEvt ? '<p>Ein Tipp auf den Knopf – dein Handy fragt einmal nach, dann ist es erledigt.</p>'
+          : `<p>Falls kein Knopf erscheint, geht es so:</p><ol><li>Oben rechts in Chrome auf die <b>drei Punkte ⋮</b> tippen</li><li><b>„App installieren“</b> oder <b>„Zum Startbildschirm hinzufügen“</b> wählen</li><li>Bestätigen – fertig</li></ol>`}
+        <div class="grow"></div>${dots}
+        ${S.installed ? next('Fertig') : S.installEvt ? '<button class="btn primary" data-act="install">App installieren</button>' + `<button class="btn" data-act="onb-next" style="background:none;color:var(--muted)">Später</button>` : next('Erledigt – fertig')}</div>`;
       return `<div class="step"><div class="ico">📲</div><h2>Auf den Home-Bildschirm</h2>
         <p>Auf dem iPhone kommen Benachrichtigungen nur, wenn die App auf dem Home-Bildschirm liegt:</p>
         <ol><li>Unten in Safari auf <b>Teilen</b> (Quadrat mit Pfeil) tippen</li><li><b>„Zum Home-Bildschirm“</b> wählen</li><li>Die App dann über das neue Symbol öffnen</li></ol>
@@ -1901,7 +1906,13 @@ document.addEventListener('click', async e => {
     case 'copy-invite': copyText(inviteURL()); break;
     case 'switch-user': S.me = other(); await meta.set('device', { user:S.me, spaceId:S.spaceId, secret:S.secret }); closeSheet(); S.tab = 'home'; render(); toast(`Ansicht: ${nick(S.me)}`); break;
     case 'onb-next': onbNext(); break;
-    case 'install': if (S.installEvt) { S.installEvt.prompt(); try { const r = await S.installEvt.userChoice; if (r.outcome === 'accepted') toast('Wird installiert ✓'); } catch (_) {} S.installEvt = null; } if (S.onb) onbNext(); else closeSheet(); break;
+    case 'install': {
+      let ok = false;
+      if (S.installEvt) { const ev = S.installEvt; S.installEvt = null; ev.prompt(); try { ok = (await ev.userChoice).outcome === 'accepted'; } catch (_) {} }
+      if (ok) { S.installed = true; toast('Unsergram wird installiert ✓'); }
+      if (S.onb) { if (ok) render(); else onbNext(); } else closeSheet();
+      break;
+    }
     case 'copy-join': copyText(location.href); t.textContent = '✓ Kopiert – jetzt Teilen → Zum Home-Bildschirm'; break;
     case 'onb-paste': {
       $('#joinbox').style.display = 'block'; t.style.display = 'none';
@@ -1960,7 +1971,8 @@ document.addEventListener('keydown', e => {
 setInterval(() => { if (S.me && !S.onb && S.tab === 'home' && !$('.backdrop') && !$('#viewer')) scheduleRender(); }, 60000);
 
 /* ---------- Start ---------- */
-window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); S.installEvt = e; });
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); S.installEvt = e; if (S.onb && S.onb.step === 'home') render(); });
+window.addEventListener('appinstalled', () => { S.installed = true; S.installEvt = null; if (S.onb && S.onb.step === 'home') render(); });
 async function boot(){
   if ('serviceWorker' in navigator && location.protocol === 'https:') {
     const hadCtrl = !!navigator.serviceWorker.controller; let reloaded = false;
