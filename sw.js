@@ -1,5 +1,5 @@
 // Anke & Jörg – Service Worker (Offline-Start + Push)
-const CACHE = 'aj-v16';
+const CACHE = 'aj-v17';
 const SHELL = ['./', './index.html', './manifest.json', './icon-192.png?v=4', './icon-512.png?v=4'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));

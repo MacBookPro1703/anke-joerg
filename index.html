@@ -508,7 +508,7 @@ const CONFIG = {
 };
 
 const APP_NAME = 'Unsergram';
-const APP_VERSION = '5.11.-4';
+const APP_VERSION = '5.11.-5';
 const USERS = {
   je:   { id:'je',   nick:'j from e', email:'je@ebbing-project.de', fixedNick:true,  emoji:'🙂', sound:'glocke' },
   anke: { id:'anke', nick:'Anke',     email:'',                     fixedNick:false, emoji:'🌻', sound:'kuh' }
@@ -889,13 +889,30 @@ async function processFile(file, max=1600){
     });
     return { blob:file, type:'video', w:m.w || 9, h:m.h || 16, d:m.d || 0, ext:(file.type.includes('quicktime') ? 'mov' : 'mp4') };
   }
-  const img = await loadImg(file);
-  const w = img.naturalWidth, h = img.naturalHeight, k = Math.min(1, max / Math.max(w, h));
+  let src = null;
+  if (window.createImageBitmap) { try { src = await createImageBitmap(file); } catch (_) { src = null; } }
+  if (!src) src = await loadImg(file);
+  const w = src.width || src.naturalWidth, h = src.height || src.naturalHeight, k = Math.min(1, max / Math.max(w, h));
   const cw = Math.round(w * k), ch = Math.round(h * k);
   const c = document.createElement('canvas'); c.width = cw; c.height = ch;
-  c.getContext('2d').drawImage(img, 0, 0, cw, ch);
+  c.getContext('2d').drawImage(src, 0, 0, cw, ch);
+  if (src.close) src.close(); else if (src.src) URL.revokeObjectURL(src.src);
+  // Schutz: manche Browser (z. B. Samsung Internet) liefern hier ein schwarzes Bild
+  let blank = false;
+  try {
+    const t = document.createElement('canvas'); t.width = 32; t.height = 32; const tc = t.getContext('2d');
+    tc.drawImage(c, 0, 0, 32, 32); const d = tc.getImageData(0, 0, 32, 32).data; let mx = 0;
+    for (let i = 0; i < d.length; i += 4) mx = Math.max(mx, d[i] + d[i + 1] + d[i + 2]);
+    blank = mx < 15;
+  } catch (_) {}
   const blob = await new Promise(r => c.toBlob(r, 'image/jpeg', 0.82));
-  URL.revokeObjectURL(img.src);
+  const suspicious = !blob || (blob.size < 20000 && file.size > 100000 && blob.size < file.size * 0.05);
+  if (blank || suspicious) {
+    const t = (file.type || 'image/jpeg').toLowerCase();
+    const ext = t.includes('png') ? 'png' : t.includes('webp') ? 'webp' : t.includes('heic') || t.includes('heif') ? 'heic' : 'jpg';
+    if (file.size > 25e6) throw new Error('Das Foto ist zu groß zum Hochladen.');
+    return { blob:file, type:'image', w, h, ext };
+  }
   return { blob, type:'image', w:cw, h:ch, ext:'jpg' };
 }
 async function storeMedia(pr){
