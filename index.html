@@ -502,6 +502,15 @@ a.btn:not(.primary){color:var(--fg)}
 @keyframes spin{to{transform:rotate(360deg)}}
 .vwho{display:flex;align-items:center;gap:9px;background:none;border:0;padding:0;color:#fff;font:inherit;cursor:pointer}
 .vwho b{font-size:14px}
+/* Story: Antworten + Herz */
+.vreply{position:absolute;left:0;right:0;bottom:0;z-index:5;display:flex;align-items:center;gap:6px;padding:10px 10px calc(12px + env(safe-area-inset-bottom));background:linear-gradient(transparent,rgba(0,0,0,.45))}
+.vreply input{flex:1;background:transparent;border:1.5px solid rgba(255,255,255,.7);border-radius:24px;color:#fff;padding:11px 16px;font-size:15px}
+.vreply input::placeholder{color:rgba(255,255,255,.85)}
+.vreply .icon-btn{color:#fff}
+.vreply .icon-btn svg{width:28px;height:28px}
+.vreply .icon-btn.on{color:#ed4956}
+.vreply .icon-btn.bump svg{animation:bump .35s ease}
+.vcap{bottom:62px}
 </style>
 </head>
 <body>
@@ -518,7 +527,7 @@ const CONFIG = {
 };
 
 const APP_NAME = 'Unsergram';
-const APP_VERSION = '5.11.-8';
+const APP_VERSION = '5.11.-9';
 const USERS = {
   je:   { id:'je',   nick:'j from e', email:'je@ebbing-project.de', fixedNick:true,  emoji:'🙂', sound:'glocke' },
   anke: { id:'anke', nick:'Anke',     email:'',                     fixedNick:false, emoji:'🌻', sound:'kuh' }
@@ -1598,8 +1607,10 @@ function openViewer(items, i){
   V.list = items; V.i = Math.max(0, Math.min(i || 0, items.length - 1));
   const el = document.createElement('div'); el.className = 'viewer'; el.id = 'viewer'; el.innerHTML = '<div class="vwrap"></div>';
   document.body.appendChild(el); document.body.style.overflow = 'hidden';
-  el.addEventListener('pointerdown', e => { if (e.target.closest('[data-act="viewer-close"],[data-act="viewer-profile"]')) return; V.downAt = Date.now(); V.paused = true; const v = $('#viewer video'); if (v) v.pause(); });
-  const resume = () => { if (!$('#viewer')) return; V.paused = false; const v = $('#viewer video'); if (v && V.ready) v.play().catch(() => {}); };
+  el.addEventListener('focusin', e => { if (e.target.id === 'vrin') { V.paused = true; V.typing = true; const v = $('#viewer video'); if (v) v.pause(); } });
+  el.addEventListener('focusout', e => { if (e.target.id === 'vrin') { V.typing = false; V.paused = false; } });
+  el.addEventListener('pointerdown', e => { if (e.target.closest('[data-act="viewer-close"],[data-act="viewer-profile"],.vreply')) return; V.downAt = Date.now(); V.paused = true; const v = $('#viewer video'); if (v) v.pause(); });
+  const resume = () => { if (!$('#viewer') || V.typing) return; V.paused = false; const v = $('#viewer video'); if (v && V.ready) v.play().catch(() => {}); };
   el.addEventListener('pointerup', resume); el.addEventListener('pointercancel', resume); el.addEventListener('pointerleave', resume);
   showItem();
 }
@@ -1619,7 +1630,13 @@ function showItem(){
     head = `<div class="vhead"><button class="vwho" data-act="viewer-profile" data-u="${s.author}">${avatar(s.author, 32)}<b>${esc(nick(s.author))}</b></button><span>${it.type === 'post' ? dayLabel(s.created_at) : ago(s.created_at)}</span>${archived ? '<span class="tag">Archiv</span>' : ''}${close}</div>`;
     if (it.type === 'story' && s.media_path && s.text) foot = `<div class="vcap">${esc(s.text)}</div>`;
     if (it.type === 'post' && s.media_path && s.text) foot = `<div class="vpost-cap"><p>${esc(s.text)}</p></div>`;
-    if (it.type === 'story' && s.author === S.me) { const vs = viewersOf(s.id); if (vs.length) foot += `<div class="vseen">Gesehen von ${vs.map(r => esc(nick(r))).join(', ')}</div>`; }
+    if (it.type === 'story' && s.author === S.me) { const vs = viewersOf(s.id), lk = likesOf(s.id).filter(l => l.role !== S.me); if (vs.length || lk.length) foot += `<div class="vseen">${vs.length ? 'Gesehen von ' + vs.map(r => esc(nick(r))).join(', ') : ''}${lk.length ? ' · ❤️ Gefällt ' + lk.map(l => esc(nick(l.role))).join(', ') : ''}</div>`; }
+    if (it.type === 'story' && s.author !== S.me) {
+      const liked = likesOf(s.id).some(l => l.role === S.me);
+      foot += `<form class="vreply" id="vreply" data-id="${s.id}"><input type="text" id="vrin" placeholder="Antworten …" autocomplete="off" enterkeyhint="send" maxlength="500">
+        <button type="button" class="icon-btn ${liked ? 'on' : ''}" data-act="story-like" data-id="${s.id}" aria-label="Gefällt mir">${liked ? I.heartOn : I.heart}</button>
+        <button type="submit" class="icon-btn" aria-label="Senden">${I.send}</button></form>`;
+    }
     if (it.type === 'story' && s.author !== S.me && !viewersOf(s.id).includes(S.me)) put('story_views', { story_id:s.id, role:S.me, at:Date.now() });
   }
   wrap.innerHTML = `${body}${foot}<div class="vtap l" data-act="vprev"></div><div class="vtap r" data-act="vnext"></div><div class="vtop">${bars}${head}</div>`;
@@ -1966,6 +1983,14 @@ document.addEventListener('click', async e => {
     case 'vnext': if (Date.now() - V.downAt < 250) nextItem(); break;
     case 'vprev': if (Date.now() - V.downAt < 250) prevItem(); break;
     case 'viewer-close': e.stopPropagation(); closeViewer(); break;
+    case 'story-like': {
+      e.stopPropagation();
+      const cur = D.reactions.get(id + '|' + S.me), on = !(cur && cur.on);
+      await put('reactions', { post_id:id, role:S.me, at:Date.now(), on });
+      t.classList.toggle('on', on); t.innerHTML = on ? I.heartOn : I.heart;
+      if (on) { t.classList.add('bump'); const st = D.stories.get(id); if (st) Sync.push('like', `${nick(S.me)} gefällt deine Story ❤️`, st.text ? st.text.slice(0, 80) : ''); }
+      break;
+    }
     case 'viewer-profile': e.stopPropagation(); cancelAnimationFrame(V.raf); { const el = $('#viewer'); if (el) el.remove(); } document.body.style.overflow = '';
       S.tab = 'profile'; S.profileOf = u; S.profileTab = 'grid'; $('#app').innerHTML = ''; render(); window.scrollTo({ top:0 }); break;
     case 'challenge': openChallenge(); break;
@@ -2075,10 +2100,18 @@ document.addEventListener('input', e => {
 document.addEventListener('submit', e => {
   const f = e.target.closest('.cform');
   if (f) { e.preventDefault(); addComment(f.dataset.id, f.elements.t.value); return; }
+  if (e.target.id === 'vreply') {
+    e.preventDefault(); const i = $('#vrin'); const v = (i.value || '').trim(); if (!v) return;
+    const st = D.stories.get(e.target.dataset.id);
+    put('messages', { id:newId(), author:S.me, text:`↩️ Zu deiner Story${st && st.text ? ' „' + st.text.slice(0, 40) + '“' : ''}: ${v}`, created_at:Date.now(), read_at:null, deleted:false });
+    Sync.push('message', nick(S.me), `↩️ Antwort auf deine Story: ${v.slice(0, 100)}`);
+    i.value = ''; i.blur(); toast('Gesendet ✓'); return;
+  }
   if (e.target.id === 'cbar') { e.preventDefault(); const i = $('#cmsg'); const v = i.value; i.value = ''; sendMessage(v); i.focus(); }
 });
 document.addEventListener('keydown', e => {
   if (!$('#viewer')) { if (e.key === 'Escape') { closeSheet(); closeAlert(); } return; }
+  if (e.target && e.target.id === 'vrin') return;
   if (e.key === 'Escape') closeViewer();
   if (e.key === 'ArrowRight') nextItem();
   if (e.key === 'ArrowLeft') prevItem();
