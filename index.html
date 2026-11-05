@@ -511,6 +511,13 @@ a.btn:not(.primary){color:var(--fg)}
 .vreply .icon-btn.on{color:#ed4956}
 .vreply .icon-btn.bump svg{animation:bump .35s ease}
 .vcap{bottom:62px}
+/* Profilbild groß */
+.avbig{position:fixed;inset:0;z-index:96;background:rgba(0,0,0,.82);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;animation:tin .18s;cursor:zoom-out;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.avbig-c{width:min(78vw,320px);height:min(78vw,320px);border-radius:50%;overflow:hidden;background:#222;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 40px rgba(0,0,0,.5)}
+.avbig-c img{width:100%;height:100%;object-fit:cover}
+.avbig-c span{font-size:min(40vw,170px)}
+.avbig b{color:#fff;font-size:18px}
+[data-hold-avatar]{-webkit-touch-callout:none;user-select:none}
 </style>
 </head>
 <body>
@@ -527,7 +534,7 @@ const CONFIG = {
 };
 
 const APP_NAME = 'Unsergram';
-const APP_VERSION = '5.11.-9';
+const APP_VERSION = '5.11.-10';
 const USERS = {
   je:   { id:'je',   nick:'j from e', email:'je@ebbing-project.de', fixedNick:true,  emoji:'🙂', sound:'glocke' },
   anke: { id:'anke', nick:'Anke',     email:'',                     fixedNick:false, emoji:'🌻', sound:'kuh' }
@@ -1302,7 +1309,7 @@ function profileHTML(r){
       : `<div class="empty">Der erste Wochen-Rückblick erscheint automatisch am Montag – mit den schönsten Momenten der Woche.</div>`;
   } else body = ps.length ? gridHTML(ps, r) : `<div class="empty"><div class="big">📷</div><b>Noch keine Beiträge</b>${own ? 'Teile deinen ersten Moment.' : esc(nick(r)) + ' hat noch nichts geteilt.'}</div>`;
   return `<header class="topbar">${head}</header>
-    <section class="prof">${storiesOf(r, true).length ? `<button class="story" style="width:auto" data-act="story-user" data-u="${r}"><div class="ring ${r !== S.me && storiesOf(r, true).every(s => viewersOf(s.id).includes(S.me)) ? 'seen' : ''}" style="width:92px;height:92px">${ringAvatar(r)}</div></button>` : avatar(r, 86)}
+    <section class="prof">${storiesOf(r, true).length ? `<button class="story" style="width:auto" data-act="avatar-big" data-u="${r}"><div class="ring ${r !== S.me && storiesOf(r, true).every(s => viewersOf(s.id).includes(S.me)) ? 'seen' : ''}" style="width:92px;height:92px" data-hold-avatar="${r}">${ringAvatar(r)}</div></button>` : `<button class="who" style="background:none;border:0;padding:0;cursor:zoom-in" data-act="avatar-big" data-u="${r}">${avatar(r, 86)}</button>`}
       <div class="stats"><div><b>${ps.length}</b><span>Beiträge</span></div><div><b>${st.length}</b><span>Stories</span></div><div><b>${week}</b><span>diese Woche</span></div></div></section>
     <div class="pname"><b>${esc(nick(r))}${prof(r).pronouns ? ` <span class="muted" style="font-weight:400">${esc(prof(r).pronouns)}</span>` : ''}</b>${prof(r).bio ? `<p class="bio">${esc(prof(r).bio)}</p>` : ''}${safeLink(prof(r).link) ? `<a class="plink" href="${esc(safeLink(prof(r).link))}" target="_blank" rel="noopener">🔗 ${esc(safeLink(prof(r).link).replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, ''))}</a>` : ''}<span class="muted">Lieblingston: ${soundInfo(prof(r).sound)[1]} ${soundInfo(prof(r).sound)[2]}</span></div>
     ${own ? `<div class="pact"><button class="btn" data-act="edit-profile">Profil bearbeiten</button><button class="btn" data-act="create-story">Story hinzufügen</button></div>` : `<div class="pact"><button class="btn" data-act="tab" data-tab="chat">Nachricht</button></div>`}
@@ -1983,6 +1990,8 @@ document.addEventListener('click', async e => {
     case 'vnext': if (Date.now() - V.downAt < 250) nextItem(); break;
     case 'vprev': if (Date.now() - V.downAt < 250) prevItem(); break;
     case 'viewer-close': e.stopPropagation(); closeViewer(); break;
+    case 'avatar-big': showAvatarBig(u); break;
+    case 'avbig-story': { $$('.avbig').forEach(x => x.remove()); const list = storiesOf(u, true); openViewer(list.map(s => ({ type:'story', s })), 0); break; }
     case 'story-like': {
       e.stopPropagation();
       const cur = D.reactions.get(id + '|' + S.me), on = !(cur && cur.on);
@@ -2117,6 +2126,20 @@ document.addEventListener('keydown', e => {
   if (e.key === 'ArrowLeft') prevItem();
 });
 setInterval(() => { if (S.me && !S.onb && S.tab === 'home' && !$('.backdrop') && !$('#viewer')) scheduleRender(); }, 60000);
+
+/* ---------- Profilbild groß ---------- */
+function showAvatarBig(r){
+  $$('.avbig').forEach(x => x.remove());
+  const p = prof(r), el = document.createElement('div'); el.className = 'avbig';
+  const hasStory = storiesOf(r, true).length > 0;
+  el.innerHTML = `<div class="avbig-c">${p.avatar_path ? `<img data-media="${esc(p.avatar_path)}" alt="">` : `<span>${esc(p.emoji || '🙂')}</span>`}</div><b>${esc(nick(r))}</b>${hasStory ? `<button class="btn primary" style="width:auto;padding:10px 22px" data-act="avbig-story" data-u="${r}">Story ansehen</button>` : ''}`;
+  el.addEventListener('click', e => { if (!e.target.closest('[data-act=avbig-story]')) el.remove(); });
+  document.body.appendChild(el); hydrate(el);
+}
+let holdT = 0, held = false;
+document.addEventListener('pointerdown', e => { const h = e.target.closest('[data-hold-avatar]'); held = false; if (!h) return; holdT = setTimeout(() => { held = true; showAvatarBig(h.dataset.holdAvatar); }, 450); });
+['pointerup', 'pointercancel', 'pointerleave'].forEach(ev => document.addEventListener(ev, () => clearTimeout(holdT)));
+document.addEventListener('click', e => { if (held && e.target.closest('[data-hold-avatar]')) { e.stopPropagation(); e.preventDefault(); held = false; } }, true);
 
 /* ---------- Nach unten ziehen = aktualisieren ---------- */
 const PTR = { y0:null, dist:0, busy:false, el:null };
