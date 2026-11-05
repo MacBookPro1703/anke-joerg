@@ -500,6 +500,8 @@ a.btn:not(.primary){color:var(--fg)}
 .ptr.ready .ptr-spin{border-top-color:#e8457c}
 .ptr.spinning .ptr-spin{animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
+.vwho{display:flex;align-items:center;gap:9px;background:none;border:0;padding:0;color:#fff;font:inherit;cursor:pointer}
+.vwho b{font-size:14px}
 </style>
 </head>
 <body>
@@ -516,7 +518,7 @@ const CONFIG = {
 };
 
 const APP_NAME = 'Unsergram';
-const APP_VERSION = '5.11.-6';
+const APP_VERSION = '5.11.-7';
 const USERS = {
   je:   { id:'je',   nick:'j from e', email:'je@ebbing-project.de', fixedNick:true,  emoji:'🙂', sound:'glocke' },
   anke: { id:'anke', nick:'Anke',     email:'',                     fixedNick:false, emoji:'🌻', sound:'kuh' }
@@ -1593,7 +1595,7 @@ function openViewer(items, i){
   V.list = items; V.i = Math.max(0, Math.min(i || 0, items.length - 1));
   const el = document.createElement('div'); el.className = 'viewer'; el.id = 'viewer'; el.innerHTML = '<div class="vwrap"></div>';
   document.body.appendChild(el); document.body.style.overflow = 'hidden';
-  el.addEventListener('pointerdown', e => { if (e.target.closest('[data-act="viewer-close"]')) return; V.downAt = Date.now(); V.paused = true; const v = $('#viewer video'); if (v) v.pause(); });
+  el.addEventListener('pointerdown', e => { if (e.target.closest('[data-act="viewer-close"],[data-act="viewer-profile"]')) return; V.downAt = Date.now(); V.paused = true; const v = $('#viewer video'); if (v) v.pause(); });
   const resume = () => { if (!$('#viewer')) return; V.paused = false; const v = $('#viewer video'); if (v && V.ready) v.play().catch(() => {}); };
   el.addEventListener('pointerup', resume); el.addEventListener('pointercancel', resume); el.addEventListener('pointerleave', resume);
   showItem();
@@ -1611,7 +1613,7 @@ function showItem(){
     const s = it.type === 'story' ? it.s : it.p;
     body = `<div class="vbody">${s.media_path ? (s.media_type === 'video' ? `<video data-media="${esc(s.media_path)}" playsinline></video>` : `<img data-media="${esc(s.media_path)}" alt="">`) : textBox(s.text, s.bg)}</div>`;
     const archived = it.type === 'story' && Date.now() - s.created_at > DAY;
-    head = `<div class="vhead">${avatar(s.author, 32)}<b>${esc(nick(s.author))}</b><span>${it.type === 'post' ? dayLabel(s.created_at) : ago(s.created_at)}</span>${archived ? '<span class="tag">Archiv</span>' : ''}${close}</div>`;
+    head = `<div class="vhead"><button class="vwho" data-act="viewer-profile" data-u="${s.author}">${avatar(s.author, 32)}<b>${esc(nick(s.author))}</b></button><span>${it.type === 'post' ? dayLabel(s.created_at) : ago(s.created_at)}</span>${archived ? '<span class="tag">Archiv</span>' : ''}${close}</div>`;
     if (it.type === 'story' && s.media_path && s.text) foot = `<div class="vcap">${esc(s.text)}</div>`;
     if (it.type === 'post' && s.media_path && s.text) foot = `<div class="vpost-cap"><p>${esc(s.text)}</p></div>`;
     if (it.type === 'story' && s.author === S.me) { const vs = viewersOf(s.id); if (vs.length) foot += `<div class="vseen">Gesehen von ${vs.map(r => esc(nick(r))).join(', ')}</div>`; }
@@ -1960,6 +1962,8 @@ document.addEventListener('click', async e => {
     case 'vnext': if (Date.now() - V.downAt < 250) nextItem(); break;
     case 'vprev': if (Date.now() - V.downAt < 250) prevItem(); break;
     case 'viewer-close': e.stopPropagation(); closeViewer(); break;
+    case 'viewer-profile': e.stopPropagation(); cancelAnimationFrame(V.raf); { const el = $('#viewer'); if (el) el.remove(); } document.body.style.overflow = '';
+      S.tab = 'profile'; S.profileOf = u; S.profileTab = 'grid'; $('#app').innerHTML = ''; render(); window.scrollTo({ top:0 }); break;
     case 'challenge': openChallenge(); break;
     case 'challenge-go': openCreate('post', true); break;
     case 'ping': sendPing(t.dataset.k); break;
