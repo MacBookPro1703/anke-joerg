@@ -508,7 +508,7 @@ const CONFIG = {
 };
 
 const APP_NAME = 'Unsergram';
-const APP_VERSION = '5.11.-2';
+const APP_VERSION = '5.11.-3';
 const USERS = {
   je:   { id:'je',   nick:'j from e', email:'je@ebbing-project.de', fixedNick:true,  emoji:'🙂', sound:'glocke' },
   anke: { id:'anke', nick:'Anke',     email:'',                     fixedNick:false, emoji:'🌻', sound:'kuh' }
@@ -545,6 +545,12 @@ const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const newId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 const isAndroid = () => /Android/i.test(navigator.userAgent);
+const isSamsungBrowser = () => /SamsungBrowser/i.test(navigator.userAgent);
+const isInAppBrowser = () => /(FBAN|FBAV|Instagram|WhatsApp|Line\/|wv\))/i.test(navigator.userAgent);
+function chromeIntentURL(){
+  const q = S.onb && S.onb.secret ? (S.onb.mode === 'restore' ? `?restore=${S.onb.secret}-${S.onb.role}` : `?join=${S.onb.secret}`) : '';
+  return `intent://${location.host}${location.pathname}${q}#Intent;scheme=https;package=com.android.chrome;end`;
+}
 const isIOS = () => /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 const standalone = () => window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
 const hhmm = t => new Date(t).toLocaleTimeString('de-DE', {hour:'2-digit', minute:'2-digit'});
@@ -1701,7 +1707,7 @@ async function doRestore(secret, role){
   const r = await Sync.sb.rpc('join_space', { p_secret:secret, p_role:role }); if (r.error) throw r.error;
   S.spaceId = r.data.space_id; S.secret = r.data.secret; S.me = role;
   await meta.set('device', { user:S.me, spaceId:S.spaceId, secret:S.secret });
-  if (location.hash) history.replaceState(null, '', location.pathname);
+  if (location.hash || location.search) history.replaceState(null, '', location.pathname);
   await Sync.start();
   const needPush = 'Notification' in window && Notification.permission !== 'granted' && !(isIOS() && !standalone());
   if (needPush) { S.onb = { step:'push', mode:'restore', role }; render(); }
@@ -1769,6 +1775,11 @@ function onbHTML(){
   const skip = `<button class="btn" data-act="onb-next" style="background:none;color:var(--muted)">Später</button>`;
   switch (o.step) {
     case 'welcome': {
+      if (isAndroid() && (isSamsungBrowser() || isInAppBrowser()) && !standalone() && !o.forceHere) return `<div class="step"><div class="ico">🌐</div><h2>Bitte in Chrome öffnen</h2>
+        <p>Du bist gerade im ${isSamsungBrowser() ? 'Samsung-Internet-Browser' : 'eingebauten Browser einer App'}. Der installiert Unsergram nicht sauber – daher kommt die Warnung „ältere Android-Version / nicht sicher“. Unsergram selbst ist nicht unsicher.</p>
+        <p>In <b>Chrome</b> klappt alles: Einrichten und mit einem Tipp installieren.</p>
+        <div class="grow"></div><a class="btn primary" style="text-decoration:none" href="${chromeIntentURL()}">In Chrome öffnen</a>
+        <button class="btn" data-act="onb-here" style="background:none;color:var(--muted)">Trotzdem hier weiter</button></div>`;
       if (o.mode === 'restore') {
         if (isIOS() && !standalone()) return `<div class="step"><div class="ico">🔑</div><h2>Wiederherstellen</h2>
           <p>Auf dem iPhone in dieser Reihenfolge:</p>
@@ -1801,7 +1812,8 @@ function onbHTML(){
         <button class="btn primary" data-act="onb-profile" id="onbgo">${Sync.configured ? 'Weiter & verbinden' : 'Los geht’s'}</button><p class="fine" id="onberr" style="color:var(--danger);text-align:center"></p></div>`;
     case 'home': if (isAndroid()) return `<div class="step"><div class="ico">📲</div><h2>Letzter Schritt: Unsergram auf den Startbildschirm</h2>
         <p>Dann startet Unsergram wie eine richtige App – mit eigenem Symbol, ohne Browser-Leiste. Alles, was du gerade eingerichtet hast, bleibt erhalten.</p>
-        ${S.installed ? '<p class="ok">✓ Unsergram ist installiert. Du findest es jetzt auf deinem Startbildschirm.</p>'
+        ${isSamsungBrowser() || isInAppBrowser() ? '<p><b>Hinweis:</b> Installieren bitte nur über <b>Chrome</b> – dieser Browser löst sonst die Warnung „ältere Android-Version“ aus. Öffne dazu deinen Wiederherstellen-Link (Profil → Zahnrad) in Chrome.</p>'
+          : S.installed ? '<p class="ok">✓ Unsergram ist installiert. Du findest es jetzt auf deinem Startbildschirm.</p>'
           : S.installEvt ? '<p>Ein Tipp auf den Knopf – dein Handy fragt einmal nach, dann ist es erledigt.</p>'
           : `<p>Falls kein Knopf erscheint, geht es so:</p><ol><li>Oben rechts in Chrome auf die <b>drei Punkte ⋮</b> tippen</li><li><b>„App installieren“</b> oder <b>„Zum Startbildschirm hinzufügen“</b> wählen</li><li>Bestätigen – fertig</li></ol>`}
         <div class="grow"></div>${dots}
@@ -1837,7 +1849,7 @@ async function onbNext(){
 }
 async function finishOnb(){
   S.onb = null; S.tab = 'home';
-  if (location.hash) history.replaceState(null, '', location.pathname);
+  if (location.hash || location.search) history.replaceState(null, '', location.pathname);
   render(); toast(`Hallo ${nick(S.me)}!`);
 }
 async function onbProfile(){
@@ -1944,6 +1956,7 @@ document.addEventListener('click', async e => {
     case 'copy-invite': copyText(inviteURL()); break;
     case 'switch-user': S.me = other(); await meta.set('device', { user:S.me, spaceId:S.spaceId, secret:S.secret }); closeSheet(); S.tab = 'home'; render(); toast(`Ansicht: ${nick(S.me)}`); break;
     case 'onb-next': onbNext(); break;
+    case 'onb-here': S.onb.forceHere = true; render(); break;
     case 'install': {
       let ok = false;
       if (S.installEvt) { const ev = S.installEvt; S.installEvt = null; ev.prompt(); try { ok = (await ev.userChoice).outcome === 'accepted'; } catch (_) {} }
@@ -2031,11 +2044,12 @@ async function boot(){
   S.feedMode = (await meta.get('feedMode')) || 'all';
   S.actSeen = (await meta.get('actSeen')) || 0;
   const dev = await meta.get('device');
-  const m = location.hash.match(/join=([a-f0-9]{16,})/i), rh = location.hash.match(RESTORE_RX);
+  const hs = location.hash + ' ' + location.search;
+  const m = hs.match(/join=([a-f0-9]{16,})/i), rh = hs.match(RESTORE_RX);
   if (dev && dev.user) {
     S.me = dev.user; S.spaceId = dev.spaceId || 'local'; S.secret = dev.secret || null;
     if (m && m[1] !== S.secret) toast('Dieses Handy ist schon verbunden.');
-    if (location.hash) history.replaceState(null, '', location.pathname);
+    if (location.hash || location.search) history.replaceState(null, '', location.pathname);
     render(); Sync.start().then(scheduleRender);
   } else {
     S.onb = rh ? { step:'welcome', mode:'restore', secret:rh[1], role:rh[2].toLowerCase() } : { step:'welcome', mode:m ? 'join' : 'new', secret:m ? m[1] : null, role:null };
