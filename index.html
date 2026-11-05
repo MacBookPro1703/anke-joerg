@@ -508,7 +508,7 @@ const CONFIG = {
 };
 
 const APP_NAME = 'Unsergram';
-const APP_VERSION = '5.11.-3';
+const APP_VERSION = '5.11.-4';
 const USERS = {
   je:   { id:'je',   nick:'j from e', email:'je@ebbing-project.de', fixedNick:true,  emoji:'🙂', sound:'glocke' },
   anke: { id:'anke', nick:'Anke',     email:'',                     fixedNick:false, emoji:'🌻', sound:'kuh' }
@@ -766,6 +766,7 @@ const Sync = {
     try {
       const { fresh } = await this.ensureAuth();
       if (fresh && S.secret) { const r = await this.sb.rpc('join_space', { p_secret:S.secret, p_role:S.me }); if (r.error) throw r.error; }
+      try { const ms = await this.sb.rpc('my_space'); if (!ms.error && ms.data && ms.data.space_id && ms.data.space_id !== S.spaceId) await switchSpace(ms.data); } catch (_) {}
       this.ready = true; this.status = 'verbunden';
       this.subscribe(); await this.pull(); Outbox.flush();
     } catch (e) { this.status = 'offline'; console.warn('Sync', e); setTimeout(() => this.start(), 20000); }
@@ -827,6 +828,13 @@ const Outbox = {
 window.addEventListener('online', () => { Outbox.flush(); if (Sync.ready) Sync.pull(); });
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && Sync.ready) { Sync.pull(); Outbox.flush(); } });
 
+async function switchSpace(d){
+  const old = S.spaceId;
+  S.spaceId = d.space_id; if (d.secret) S.secret = d.secret;
+  await meta.set('device', { user:S.me, spaceId:S.spaceId, secret:S.secret });
+  for (const [k, job] of await DB.entries('outbox')) { if (job.row && job.row.space_id === old) { job.row.space_id = S.spaceId; await DB.put('outbox', job, k); } }
+  toast('Mit eurem gemeinsamen Raum verbunden ✓');
+}
 async function put(table, row){
   row.space_id = S.spaceId;
   const k = TABLES[table].key(row);
@@ -1804,7 +1812,7 @@ function onbHTML(){
           <button class="btn primary" data-act="onb-join" id="joingo">Verbinden</button></div>
           <button class="btn primary" data-act="onb-paste" id="joinpaste">Ich habe eine Einladung</button>
           <button class="btn" data-act="onb-paste" data-r="1">🔑 Wiederherstellen</button>
-          <button class="btn" data-act="onb-next">Neu einrichten (ich lade ein)</button>` : (o.mode !== 'join' ? next('Einrichten') : '')}</div>`;
+          <button class="btn" data-act="onb-new-ask">Neu einrichten (ich lade ein)</button>` : (o.mode !== 'join' ? next('Einrichten') : '')}</div>`;
     }
     case 'who': return `<div class="step"><div class="ico">👋</div><h2>Wer bist du?</h2><p>Das bleibt auf diesem Handy so eingestellt.</p><div class="grow"></div>${dots}
         <button class="btn primary" data-act="onb-who" data-u="je">Ich bin j from e</button><button class="btn" data-act="onb-who" data-u="anke">Ich bin Anke</button></div>`;
@@ -1956,6 +1964,11 @@ document.addEventListener('click', async e => {
     case 'copy-invite': copyText(inviteURL()); break;
     case 'switch-user': S.me = other(); await meta.set('device', { user:S.me, spaceId:S.spaceId, secret:S.secret }); closeSheet(); S.tab = 'home'; render(); toast(`Ansicht: ${nick(S.me)}`); break;
     case 'onb-next': onbNext(); break;
+    case 'onb-new-ask': openSheet(`<h3 class="sh-title">Wirklich ganz neu?</h3>
+        <p class="muted" style="margin:0 0 14px">Nutzt ihr Unsergram schon? Dann bitte <b>nicht</b> neu einrichten – sonst entsteht ein zweiter, leerer Raum und ihr seht euch nicht mehr. Nimm stattdessen <b>Wiederherstellen</b> (dein Link aus den Einstellungen) oder die <b>Einladung</b> vom anderen.</p>
+        <div class="menu"><button class="btn" data-act="onb-new-cancel">Zurück – ich habe einen Link</button><button class="btn danger" data-act="onb-new-go">Ja, ganz neu einrichten</button></div>`); break;
+    case 'onb-new-cancel': closeSheet(); { const b = $('[data-act=onb-paste][data-r]'); if (b) b.click(); } break;
+    case 'onb-new-go': closeSheet(); onbNext(); break;
     case 'onb-here': S.onb.forceHere = true; render(); break;
     case 'install': {
       let ok = false;
