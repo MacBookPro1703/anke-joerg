@@ -534,7 +534,7 @@ const CONFIG = {
 };
 
 const APP_NAME = 'Unsergram';
-const APP_VERSION = '5.11.-10';
+const APP_VERSION = '6.11.-1';
 const USERS = {
   je:   { id:'je',   nick:'j from e', email:'je@ebbing-project.de', fixedNick:true,  emoji:'🙂', sound:'glocke' },
   anke: { id:'anke', nick:'Anke',     email:'',                     fixedNick:false, emoji:'🌻', sound:'kuh' }
@@ -811,10 +811,11 @@ const Sync = {
       if (t === 'pings') q = q.gte('created_at', Date.now() - 30*DAY);
       return q.then(r => [t, r]);
     }));
+    const pend = await Outbox.pendingKeys();
     for (const [t, { data, error }] of res) {
-      if (error) { console.warn(t, error); continue; }
+      if (error) { console.warn(t, error); Outbox.lastError = t + ': ' + error.message; continue; }
       const items = [];
-      data.forEach(row => { const k = TABLES[t].key(row); const prev = D[t].get(k); D[t].set(k, row); items.push([k, row]); effects(t, row, prev, false); });
+      data.forEach(row => { const k = TABLES[t].key(row); if (pend.has(t + '|' + k)) return; const prev = D[t].get(k); D[t].set(k, row); items.push([k, row]); effects(t, row, prev, false); });
       if (items.length) await DB.putMany(t, items);
     }
     scheduleRender();
@@ -825,32 +826,48 @@ const Sync = {
   }
 };
 const Outbox = {
-  busy:false, timer:null,
-  async add(job){ const oid = newId(); await DB.put('outbox', job, oid); this.flush(); },
+  busy:false, timer:null, lastError:'',
+  async add(job){ const oid = newId(); job.tries = 0; await DB.put('outbox', job, oid); this.flush(); },
   async count(){ return (await DB.entries('outbox')).length; },
+  async pendingKeys(){ const set = new Set(); (await DB.entries('outbox')).forEach(([, j]) => { if (j.table && j.row) set.add(j.table + '|' + TABLES[j.table].key(j.row)); }); return set; },
   async flush(){
     if (this.busy) { this.again = true; return; }
     if (!Sync.ready || !navigator.onLine) return;
     this.busy = true; this.again = false; let failed = false;
+    const failedUploads = new Set();
     try {
       const jobs = (await DB.entries('outbox')).sort((a,b) => a[0] < b[0] ? -1 : 1);
       for (const [oid, job] of jobs) {
         let err = null;
-        if (job.type === 'upload') {
-          const m = await DB.get('media', job.path);
-          if (m) { const r = await Sync.sb.storage.from('media').upload(job.path, m.blob, { contentType:m.blob.type || 'application/octet-stream', upsert:true }); err = r.error; }
-        } else if (job.type === 'remove') {
-          await Sync.sb.storage.from('media').remove([job.path]);
-        } else {
-          const r = await Sync.sb.from(job.table).upsert(job.row); err = r.error;
+        try {
+          if (job.type === 'upload') {
+            const m = await DB.get('media', job.path);
+            if (m) { const r = await Sync.sb.storage.from('media').upload(job.path, m.blob, { contentType:m.blob.type || 'image/jpeg', upsert:true }); err = r.error; }
+          } else if (job.type === 'remove') {
+            await Sync.sb.storage.from('media').remove([job.path]);
+          } else {
+            const row = { ...job.row }; if (row.space_id !== S.spaceId && S.spaceId) row.space_id = S.spaceId;
+            const mp = row.media_path || row.avatar_path;
+            if (mp && failedUploads.has(mp)) err = { message:'Bild noch nicht hochgeladen' };
+            else { const r = await Sync.sb.from(job.table).upsert(row); err = r.error; }
+          }
+        } catch (e) { err = e; }
+        if (err) {
+          failed = true; this.lastError = (job.table || job.type) + ': ' + (err.message || err.error || String(err));
+          console.warn('Outbox', this.lastError);
+          if (job.type === 'upload') failedUploads.add(job.path);
+          job.tries = (job.tries || 0) + 1;
+          if (job.tries >= 8 && !/fetch|network|Failed|timeout/i.test(this.lastError)) { await DB.del('outbox', oid); meta.set('lastDropped', { at:Date.now(), err:this.lastError }); }
+          else await DB.put('outbox', job, oid);
+          continue;
         }
-        if (err) { console.warn('Outbox', err); failed = true; break; }
         await DB.del('outbox', oid);
       }
-    } catch (e) { console.warn('Outbox', e); failed = true; }
+    } catch (e) { console.warn('Outbox', e); failed = true; this.lastError = String(e.message || e); }
+    if (!failed) this.lastError = '';
     this.busy = false;
-    if (this.again && !failed) { this.flush(); return; }
-    if ((await this.count()) > 0) { clearTimeout(this.timer); this.timer = setTimeout(() => this.flush(), 20000); }
+    if (this.again) { this.again = false; setTimeout(() => this.flush(), 400); return; }
+    if ((await this.count()) > 0) { clearTimeout(this.timer); this.timer = setTimeout(() => this.flush(), failed ? 15000 : 1000); }
   }
 };
 window.addEventListener('online', () => { Outbox.flush(); if (Sync.ready) Sync.pull(); });
@@ -872,6 +889,7 @@ async function put(table, row){
 }
 function onRemote(t, row, live){
   const k = TABLES[t].key(row); const prev = D[t].get(k);
+  if (t === 'profiles' && prev && prev.updated_at && row.updated_at && prev.updated_at > row.updated_at) return;
   D[t].set(k, row); DB.put(t, row, k);
   effects(t, row, prev, live);
   scheduleRender();
@@ -1792,7 +1810,9 @@ async function openSettings(){
     <button class="btn" data-act="howto">So funktioniert’s (Hintergrund, Fotos, iPhone & Android)</button>
     ${!Sync.configured ? '<button class="btn" data-act="switch-user">Testmodus: Ansicht wechseln</button>' : ''}
     <button class="btn" data-act="close-sheet">Schließen</button></div>
-    <p class="fine" style="text-align:center;margin-top:12px">Version ${APP_VERSION} · ${esc(syncLine())}${pend ? ` · ${pend} Änderung(en) warten` : ''}</p>`, 'tall');
+    <p class="fine" style="text-align:center;margin-top:12px">Version ${APP_VERSION} · ${esc(syncLine())}${pend ? ` · ${pend} Änderung(en) warten` : ''}</p>
+    ${pend ? `<button class="btn" data-act="flush-now">Jetzt senden</button>` : ''}
+    ${Outbox.lastError ? `<p class="fine" style="text-align:center;color:var(--danger)">Problem: ${esc(Outbox.lastError.slice(0, 160))}</p>` : ''}`, 'tall');
 }
 function openInvite(){
   const u = inviteURL(), txt = `Hier ist unser Unsergram 💛 Öffne den Link (iPhone: in Safari, Android: in Chrome), dort steht, wie es weitergeht: ${u}`;
@@ -2064,6 +2084,7 @@ document.addEventListener('click', async e => {
     case 'onb-restore-go': { const b = $('#rstgo'); if (b) { b.disabled = true; b.textContent = 'Stelle wieder her …'; }
       try { await doRestore(S.onb.secret, S.onb.role); } catch (err) { if (b) { b.disabled = false; b.textContent = 'Nochmal versuchen'; } const e = $('#rsterr'); if (e) e.textContent = err.message || 'Fehlgeschlagen'; else toast(err.message || 'Fehlgeschlagen'); } break; }
     case 'restore-link': openRestoreLink(); break;
+    case 'flush-now': if (!Sync.ready) await Sync.start(); await Outbox.flush(); closeSheet(); openSettings(); break;
     case 'copy-restore': copyText(restoreURL()); break;
     case 'share-restore': try { await navigator.share({ title:'Unsergram – Wiederherstellen', url:restoreURL() }); } catch (_) { copyText(restoreURL()); } break;
     case 'onb-join': {
